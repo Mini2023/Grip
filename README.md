@@ -107,22 +107,11 @@ Levels are calculated as `floor(totalXP / 100) + 1`. Badge unlocks (Sentinel & C
 
 ## 📱 PWA Support
 
-Antigravity is installable as a Progressive Web App on iOS and Android.
+Grip is installable as a Progressive Web App on iOS and Android.
 
 - Add to home screen via Safari/Chrome share menu
-- `overscroll-behavior-y: contain` prevents pull-to-refresh interference
-- `font-size: 16px` on inputs prevents iOS auto-zoom
-- Minimum 44×44px touch targets throughout
-- Viewport locked: `maximum-scale=1, user-scalable=no`
+- Enjoy the app like feeling
 
----
-
-## 🔐 Privacy Architecture
-
-- All data is stored in your **own Supabase project** — nothing passes through Antigravity's servers.
-- RLS policies enforce that you can only read your own sessions unless another user has explicitly set their profile to `public` or you are mutual friends.
-- The link scraper runs server-side (`/api/scrape`) — no URLs are logged server-side beyond the current request.
-- Pseudonymous usernames. Real data. Zero third-party tracking.
 
 ---
 
@@ -137,16 +126,6 @@ Antigravity is installable as a Progressive Web App on iOS and Android.
 
 ---
 
-## 📄 License
-
-MIT — Do what you want with the code. Build something that helps people. Or at least helps yourself.
-
----
-
-<div align="center">
 
 **Built with questionable search history and excellent engineering judgment.**
 
-*Antigravity — Because gravity always wins eventually.*
-
-</div>
