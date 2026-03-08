@@ -270,8 +270,6 @@ export async function POST(req: Request) {
         const duration = extractDuration(url, html);
         const tags = extractTags(url, html, title, description);
 
-        console.log('[scrape]', { url: url.substring(0, 60), type, performer, tagCount: tags.length, tags: tags.slice(0, 5) });
-
         return NextResponse.json({ title, image, description, performer, duration, type, tags });
 
     } catch (error: any) {
