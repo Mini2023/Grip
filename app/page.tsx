@@ -269,7 +269,6 @@ const DashboardPage = () => {
             const newXP = currentXP + XP_REWARDS.URGE_DEFEATED
             const { data: xpResult, error } = await supabase
                 .from('profiles').update({ xp: newXP }).eq('id', currentUser.id).select('xp').single()
-            console.log('Urge Defeated XP Update:', xpResult, error)
             if (!error) await refreshUserStats()
         } catch (e) {
             console.error('handleUrgeDefeated error:', e)
@@ -329,8 +328,6 @@ const DashboardPage = () => {
                 user_id: currentUser.id
             };
 
-            console.log('Saving session...', sessionData);
-
             // 1. Insert the session
             const { error: insertError } = await supabase.from('sessions').insert([sessionData]);
 
@@ -361,8 +358,6 @@ const DashboardPage = () => {
                     .eq('id', currentUser.id)
                     .select('xp')
                     .single();
-
-                console.log('XP Update Result:', xpUpdateData, xpError);
 
                 if (xpError) {
                     console.error('XP write failed (check RLS policy):', xpError);

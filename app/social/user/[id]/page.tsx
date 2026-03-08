@@ -161,7 +161,6 @@ export default function UserProfileById() {
     const sendFriendRequest = async () => {
         if (!currentUser || !profile) return
         const targetId = profile.id as string
-        console.log('Sending request from', currentUser.id, 'to', targetId)
         setSendingReq(true)
         const { error } = await supabase.from("friendships").insert({
             sender_id: currentUser.id,
