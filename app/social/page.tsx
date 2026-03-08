@@ -42,7 +42,7 @@ export default function SocialPage() {
         if (!user) return
         const { data, error } = await supabase
             .from('friendships')
-            .select('*')
+            .select('*, profiles:sender_id(id, username, display_name)')
             .eq('receiver_id', user.id)
             .eq('status', 'pending');
 
@@ -52,15 +52,8 @@ export default function SocialPage() {
         }
 
         if (data && data.length > 0) {
-            const senderIds = data.map(d => d.sender_id);
-            const { data: profiles, error: profErr } = await supabase
-                .from('profiles')
-                .select('id, username, display_name')
-                .in('id', senderIds);
-            if (profErr) {
-                console.error('fetchPendingRequests profiles error:', profErr.message)
-            }
-            setPendingRequests(profiles || []);
+            const profiles = data.map((d: any) => d.profiles).filter(Boolean);
+            setPendingRequests(profiles);
         } else {
             setPendingRequests([]);
         }
@@ -69,28 +62,22 @@ export default function SocialPage() {
     const getActivityStream = async () => {
         const { data } = await supabase
             .from('sessions')
-            .select('id, created_at, user_id, duration_minutes')
+            .select('id, created_at, user_id, duration_minutes, profiles(username, display_name)')
             .order('created_at', { ascending: false })
             .limit(5);
 
         if (data) {
-            // Need profiles for usernames
-            const userIds = Array.from(new Set(data.map(d => d.user_id)));
-            if (userIds.length > 0) {
-                const { data: profiles } = await supabase.from('profiles').select('id, username, display_name').in('id', userIds);
-                const profileMap = (profiles || []).reduce((acc: any, p: any) => ({ ...acc, [p.id]: p.display_name || p.username }), {});
-
-                const events = data.map(d => {
-                    const diffMins = Math.floor((new Date().getTime() - new Date(d.created_at).getTime()) / 60000);
-                    return {
-                        id: d.id,
-                        user: profileMap[d.user_id] || "Anonymous",
-                        event: `Neutralized an urge (${d.duration_minutes}m)`,
-                        time: diffMins < 60 ? `${diffMins}m ago` : `${Math.floor(diffMins / 60)}h ago`
-                    }
-                });
-                setActivityStream(events);
-            }
+            const events = data.map((d: any) => {
+                const diffMins = Math.floor((new Date().getTime() - new Date(d.created_at).getTime()) / 60000);
+                const profile = d.profiles;
+                return {
+                    id: d.id,
+                    user: profile ? (profile.display_name || profile.username) : "Anonymous",
+                    event: `Neutralized an urge (${d.duration_minutes}m)`,
+                    time: diffMins < 60 ? `${diffMins}m ago` : `${Math.floor(diffMins / 60)}h ago`
+                }
+            });
+            setActivityStream(events);
         }
     }
 
@@ -119,14 +106,13 @@ export default function SocialPage() {
                 setFriends(sortedData)
             } else if (activeTab === "friends" && user) {
                 const { data } = await supabase.from('friendships')
-                    .select('*')
+                    .select('sender_id, receiver_id, sender:sender_id(*), receiver:receiver_id(*)')
                     .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`)
                     .eq('status', 'accepted');
 
                 if (data && data.length > 0) {
-                    const friendIds = data.map(f => f.sender_id === user.id ? f.receiver_id : f.sender_id);
-                    const { data: profiles } = await supabase.from('profiles').select('*').in('id', friendIds);
-                    let sortedData = profiles || [];
+                    const profiles = data.map((f: any) => f.sender_id === user.id ? f.receiver : f.sender).filter(Boolean);
+                    let sortedData = [...profiles];
                     if (sortBy === "streak") {
                         sortedData.sort((a, b) => calculateStreak(b.current_streak_start) - calculateStreak(a.current_streak_start))
                     } else if (sortBy === "xp") {
