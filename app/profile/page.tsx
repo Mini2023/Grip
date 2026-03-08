@@ -184,8 +184,10 @@ export default function PersonalProfilePage() {
             </header>
 
             {/* ── Hero Card ── compact row on ALL screens */}
-            <div className="relative p-4 sm:p-8 rounded-[2rem] border bg-card/40 backdrop-blur-xl overflow-hidden shadow-2xl">
-                <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/5 blur-[80px] pointer-events-none" />
+            <div className="relative p-4 sm:p-8 rounded-[2rem] border bg-card/40 backdrop-blur-xl shadow-2xl">
+                <div className="absolute inset-0 overflow-hidden rounded-[2rem] pointer-events-none">
+                    <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/5 blur-[80px] pointer-events-none" />
+                </div>
                 <div className="relative z-10 flex items-center gap-4 sm:gap-6">
                     {/* Avatar */}
                     <div className="relative shrink-0">
@@ -201,10 +203,10 @@ export default function PersonalProfilePage() {
                         <AnimatePresence>
                             {showAvatarPicker && (
                                 <motion.div
-                                    initial={{ opacity: 0, scale: 0.9, y: 8 }}
+                                    initial={{ opacity: 0, scale: 0.9, y: -8 }}
                                     animate={{ opacity: 1, scale: 1, y: 0 }}
-                                    exit={{ opacity: 0, scale: 0.9, y: 8 }}
-                                    className="absolute bottom-full mb-2 left-0 p-3 bg-zinc-900 border border-white/10 rounded-2xl z-50 flex gap-2 overflow-x-auto no-scrollbar shadow-2xl min-w-max"
+                                    exit={{ opacity: 0, scale: 0.9, y: -8 }}
+                                    className="absolute top-full mt-2 left-0 p-3 bg-zinc-900 border border-white/10 rounded-2xl z-50 flex gap-2 overflow-x-auto no-scrollbar shadow-2xl min-w-max"
                                 >
                                     {AVATARS.map(a => (
                                         <button key={a} onClick={() => { setSelectedAvatar(a); setShowAvatarPicker(false) }}
