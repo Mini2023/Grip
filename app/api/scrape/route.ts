@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { supabase } from '@/lib/supabaseClient';
 
 // ── Hot-List: bekannte, relevante Kategorien (Ranking-Priorität) ─────────────
 const HOT_TAGS = [
@@ -224,6 +225,20 @@ function extractDuration(url: string, html: string): string {
 // API Route Handler
 // ═══════════════════════════════════════════════════════════════════════════════
 export async function POST(req: Request) {
+    // ── Authentication Check ────────────────────────────────────────────────
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        return NextResponse.json({ error: 'Unauthorized: Missing or invalid token' }, { status: 401 });
+    }
+
+    const token = authHeader.split(' ')[1];
+    const { data: { user }, error: authError } = await supabase.auth.getUser(token);
+
+    if (authError || !user) {
+        return NextResponse.json({ error: 'Unauthorized: Invalid session' }, { status: 401 });
+    }
+    // ────────────────────────────────────────────────────────────────────────
+
     try {
         const { url } = await req.json();
 

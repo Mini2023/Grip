@@ -211,18 +211,30 @@ const DashboardPage = () => {
         if (!url) return;
         setIsScraping(true);
         try {
+            const { data: { session } } = await supabase.auth.getSession();
+            const token = session?.access_token;
+
             const res = await fetch('/api/scrape', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
                 body: JSON.stringify({ url })
             });
             const data = await res.json();
             if (!data.error) {
                 setScrapedData(data);
                 setShowManual(false);
+            } else if (res.status === 401) {
+                toast.error("Session expired or unauthorized. Please log in again.");
+                router.push("/login");
+            } else {
+                toast.error(data.error || "Extraction failed");
             }
         } catch (err) {
             console.error("Scrape failed", err);
+            toast.error("Network error during extraction");
         } finally {
             setIsScraping(false);
         }
