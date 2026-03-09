@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useMemo } from "react"
+import React, { useState, useMemo } from "react"
 import {
     Trophy, CheckCircle2, Circle, Clock, Flame,
     Beaker, Shield, Zap, Target, Award,
@@ -8,7 +8,9 @@ import {
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useUser } from "@/components/providers/UserProvider"
-import { motion } from "framer-motion"
+import { motion, AnimatePresence } from "framer-motion"
+import { toast } from "sonner"
+import { supabase } from "@/lib/supabaseClient"
 
 interface Quest {
     id: string
@@ -107,6 +109,7 @@ const INITIAL_QUESTS: Quest[] = [
 
 export default function QuestsPage() {
     const { user, sessions, loading: userLoading } = useUser()
+    const [xpGain, setXpGain] = useState<{ amount: number, id: number } | null>(null)
 
     const quests = useMemo(() => {
         return INITIAL_QUESTS.map(q => {
@@ -136,6 +139,35 @@ export default function QuestsPage() {
             return a.completed ? 1 : -1
         })
     }, [quests])
+
+    const handleComplete = async (id: string, xp: number) => {
+        // For auto-tracked quests (based on session data), show info
+        const autoTracked = ['w2']
+        if (autoTracked.includes(id)) {
+            toast.info("This objective is tracked automatically via telemetry.")
+            return
+        }
+        // For manual quests: write XP to DB
+        try {
+            const { data: { user: currentUser } } = await supabase.auth.getUser()
+            if (!currentUser) { toast.error('Not authenticated'); return }
+            const { data: profile } = await supabase
+                .from('profiles').select('xp').eq('id', currentUser.id).single()
+            const newXP = (profile?.xp ?? 0) + xp
+            const { error } = await supabase
+                .from('profiles').update({ xp: newXP }).eq('id', currentUser.id)
+            if (error) {
+                console.error('Quest XP update error:', error)
+                toast.error(error.message)
+            } else {
+                setXpGain({ amount: xp, id: Date.now() })
+                setTimeout(() => setXpGain(null), 2500)
+                toast.success(`+${xp} XP secured. Objective complete.`)
+            }
+        } catch (e: any) {
+            toast.error(e?.message ?? 'Failed to update XP')
+        }
+    }
 
     return (
         <div className="space-y-8 animate-in fade-in duration-500 pb-24 max-w-4xl mx-auto">
@@ -231,16 +263,18 @@ export default function QuestsPage() {
                                             )}
                                         </div>
 
-                                        <div
+                                        <button
+                                            disabled={quest.completed}
+                                            onClick={() => handleComplete(quest.id, quest.xp)}
                                             className={cn(
                                                 "w-12 h-12 rounded-xl flex items-center justify-center transition-all shrink-0",
                                                 quest.completed
                                                     ? "bg-emerald-500/10 text-emerald-500 cursor-default"
-                                                    : "bg-white/5 text-zinc-500 border border-white/5"
+                                                    : "bg-white/5 hover:bg-emerald-500/20 text-zinc-500 hover:text-emerald-500 border border-white/5"
                                             )}
                                         >
                                             {quest.completed ? <CheckCircle2 className="w-5 h-5" /> : <Circle className="w-5 h-5" />}
-                                        </div>
+                                        </button>
                                     </div>
 
                                     {/* Success Glow */}
@@ -253,6 +287,22 @@ export default function QuestsPage() {
                     </section>
                 ))}
             </div>
+
+            {/* XP Gain Animation */}
+            <AnimatePresence>
+                {xpGain && (
+                    <motion.div
+                        key={xpGain.id}
+                        initial={{ opacity: 0, y: 20, scale: 0.8 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, scale: 1.2 }}
+                        className="fixed bottom-32 left-1/2 -translate-x-1/2 z-[100] bg-amber-600 px-6 py-3 rounded-2xl shadow-[0_0_30px_rgba(245,158,11,0.5)] border border-amber-400/30 flex items-center gap-3"
+                    >
+                        <Zap className="w-5 h-5 text-white animate-pulse" />
+                        <span className="text-white font-black italic tracking-tighter uppercase">+{xpGain.amount} XP SECURED</span>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </div>
     )
 }
