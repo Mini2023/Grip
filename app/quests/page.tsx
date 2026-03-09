@@ -263,18 +263,16 @@ export default function QuestsPage() {
                                             )}
                                         </div>
 
-                                        <button
-                                            disabled={quest.completed}
-                                            onClick={() => handleComplete(quest.id, quest.xp)}
+                                        <div
                                             className={cn(
                                                 "w-12 h-12 rounded-xl flex items-center justify-center transition-all shrink-0",
                                                 quest.completed
                                                     ? "bg-emerald-500/10 text-emerald-500 cursor-default"
-                                                    : "bg-white/5 hover:bg-emerald-500/20 text-zinc-500 hover:text-emerald-500 border border-white/5"
+                                                    : "bg-white/5 text-zinc-500 border border-white/5"
                                             )}
                                         >
                                             {quest.completed ? <CheckCircle2 className="w-5 h-5" /> : <Circle className="w-5 h-5" />}
-                                        </button>
+                                        </div>
                                     </div>
 
                                     {/* Success Glow */}

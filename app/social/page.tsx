@@ -134,6 +134,7 @@ export default function SocialPage() {
 
     useEffect(() => {
         fetchSocialData()
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [sortBy, activeTab])
 
     const handleSearch = async () => {
