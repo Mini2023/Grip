@@ -265,7 +265,7 @@ export default function ShieldPage() {
             >
                 <p className="text-[9px] font-black uppercase tracking-[0.4em] text-emerald-500/60 italic">Voice of Reason</p>
                 <p className="text-lg md:text-2xl font-black italic tracking-tight text-zinc-100 leading-snug">
-                    "{QUOTES[quoteIdx]}"
+                    &quot;{QUOTES[quoteIdx]}&quot;
                 </p>
                 <button
                     onClick={() => setQuoteIdx(i => (i + 1) % QUOTES.length)}
@@ -292,7 +292,7 @@ export default function ShieldPage() {
                 {!currentTask ? (
                     <div className="text-center py-10 space-y-4">
                         <p className="text-zinc-500 text-[10px] font-black uppercase tracking-widest italic">
-                            Click "New Task" to receive your tactical intervention.
+                            Click &quot;New Task&quot; to receive your tactical intervention.
                         </p>
                         <button
                             onClick={rollTask}
