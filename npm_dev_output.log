@@ -1,0 +1,14 @@
+
+> grip-control@0.1.0 dev
+> next dev
+
+ ⚠ Port 3000 is in use, trying 3001 instead.
+  ▲ Next.js 14.2.3
+  - Local:        http://localhost:3001
+
+ ✓ Starting...
+ ✓ Ready in 2.8s
+ ○ Compiling /quests ...
+ ✓ Compiled /quests in 9.9s (1641 modules)
+ GET /quests 200 in 10838ms
+ ✓ Compiled in 1144ms (820 modules)
