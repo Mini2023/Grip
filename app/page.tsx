@@ -520,6 +520,7 @@ const DashboardPage = () => {
                                 <div className="flex flex-col md:flex-row gap-6 pt-4">
                                     <div className="w-full md:w-56 h-36 rounded-2xl bg-zinc-800 overflow-hidden relative border border-white/5 shrink-0 shadow-2xl">
                                         {scrapedData.image ? (
+                                            /* eslint-disable-next-line @next/next/no-img-element */
                                             <img
                                                 src={`/api/proxy-image?url=${encodeURIComponent(scrapedData.image)}`}
                                                 alt="Thumbnail"

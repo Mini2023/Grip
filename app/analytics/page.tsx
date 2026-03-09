@@ -524,6 +524,7 @@ const AnalyticsPage = () => {
                                                 <td className="p-5">
                                                     <div className="flex items-center gap-3">
                                                         <div className="w-16 h-10 rounded-lg bg-zinc-800 border border-white/5 overflow-hidden relative shrink-0 shadow-lg">
+                                                            {/* eslint-disable-next-line @next/next/no-img-element */}
                                                             <img
                                                                 src={log.thumbnail_url ? `/api/proxy-image?url=${encodeURIComponent(log.thumbnail_url)}` : "https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?w=200&h=120&fit=crop"}
                                                                 alt="Log Preview"
