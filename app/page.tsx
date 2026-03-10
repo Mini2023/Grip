@@ -156,6 +156,7 @@ const DashboardPage = () => {
     const [mDuration, setMDuration] = useState("")
     const [mPerformer, setMPerformer] = useState("")
     const [mTags, setMTags] = useState("")
+    const [mType, setMType] = useState("Real Life")
     const [unlockedBadge, setUnlockedBadge] = useState<Badge | null>(null)
 
     const [emergencyOpen, setEmergencyOpen] = useState(false)
@@ -200,6 +201,8 @@ const DashboardPage = () => {
     const [scrapedData, setScrapedData] = useState<any>(null)
     const [showManual, setShowManual] = useState(false)
     const [isSaving, setIsSaving] = useState(false)
+    const [pendingScrapedData, setPendingScrapedData] = useState<any>(null)
+    const [showMissingDataPrompt, setShowMissingDataPrompt] = useState(false)
 
     useEffect(() => {
         if (!authLoading && !user) {
@@ -224,8 +227,19 @@ const DashboardPage = () => {
             });
             const data = await res.json();
             if (!data.error) {
-                setScrapedData(data);
-                setShowManual(false);
+                const isMissingInfo = data.title === 'Unknown Title' || !data.performer || !data.duration || !data.tags || data.tags.length === 0;
+
+                if (isMissingInfo) {
+                    setPendingScrapedData(data);
+                    setMTitle(data.title === 'Unknown Title' ? '' : data.title);
+                    setMPerformer(data.performer || '');
+                    setMDuration(data.duration || '');
+                    setMTags((data.tags || []).join(', '));
+                    setShowMissingDataPrompt(true);
+                } else {
+                    setScrapedData(data);
+                    setShowManual(false);
+                }
             } else if (res.status === 401) {
                 toast.error("Session expired or unauthorized. Please log in again.");
                 router.push("/login");
@@ -335,7 +349,7 @@ const DashboardPage = () => {
                 categories: scrapedData?.tags || mTags.split(',').map(t => t.trim()).filter(Boolean),
                 duration_minutes: parseInt(scrapedData?.duration || mDuration || "0"),
                 regret_score: parseInt(regretScore.toString()) || 5,
-                content_type: scrapedData?.type || (mTags.toLowerCase().includes('art') ? 'Digital Art' : 'Real Life'),
+                content_type: scrapedData?.type || mType,
                 thumbnail_url: scrapedData?.image || "https://images.unsplash.com/photo-1614850523296-d8c1af93d400?w=800&q=80",
                 user_id: currentUser.id
             };
@@ -500,7 +514,7 @@ const DashboardPage = () => {
                         )}
 
                         {/* Scraped Preview Card */}
-                        {scrapedData && (
+                        {scrapedData && !showMissingDataPrompt && (
                             <motion.div
                                 initial={{ opacity: 0, scale: 0.95 }}
                                 animate={{ opacity: 1, scale: 1 }}
@@ -625,6 +639,109 @@ const DashboardPage = () => {
                             </motion.div>
                         )}
 
+                        <Dialog open={showMissingDataPrompt} onOpenChange={setShowMissingDataPrompt}>
+                            <DialogContent className="sm:max-w-md bg-zinc-950 border-white/10 text-white">
+                                <DialogHeader>
+                                    <DialogTitle className="text-xl font-black italic uppercase tracking-tighter text-amber-500 flex items-center gap-2">
+                                        <AlertTriangle className="w-5 h-5" /> Incomplete Telemetry
+                                    </DialogTitle>
+                                </DialogHeader>
+                                <div className="space-y-4 py-4">
+                                    <p className="text-[10px] text-zinc-400 font-black uppercase tracking-widest italic">
+                                        The scraper could not retrieve all data. Please provide the missing fields or ignore.
+                                    </p>
+
+                                    {(!pendingScrapedData?.title || pendingScrapedData?.title === 'Unknown Title') && (
+                                        <div className="space-y-2">
+                                            <label className="text-[10px] font-black uppercase tracking-widest flex items-center gap-2 text-muted-foreground italic">
+                                                <FileText className="w-4 h-4 text-white" /> Title
+                                            </label>
+                                            <input
+                                                type="text"
+                                                value={mTitle}
+                                                onChange={(e) => setMTitle(e.target.value)}
+                                                placeholder="Enter title..."
+                                                className="w-full bg-zinc-900/50 border-none ring-1 ring-white/10 rounded-2xl px-5 py-3 focus:ring-2 focus:ring-amber-500 outline-none text-sm font-black italic"
+                                            />
+                                        </div>
+                                    )}
+
+                                    {!pendingScrapedData?.performer && (
+                                        <div className="space-y-2">
+                                            <label className="text-[10px] font-black uppercase tracking-widest flex items-center gap-2 text-muted-foreground italic">
+                                                <Users className="w-4 h-4 text-purple-500" /> Performer
+                                            </label>
+                                            <input
+                                                type="text"
+                                                value={mPerformer}
+                                                onChange={(e) => setMPerformer(e.target.value)}
+                                                placeholder="Enter performer..."
+                                                className="w-full bg-zinc-900/50 border-none ring-1 ring-white/10 rounded-2xl px-5 py-3 focus:ring-2 focus:ring-amber-500 outline-none text-sm font-black italic"
+                                            />
+                                        </div>
+                                    )}
+
+                                    {!pendingScrapedData?.duration && (
+                                        <div className="space-y-2">
+                                            <label className="text-[10px] font-black uppercase tracking-widest flex items-center gap-2 text-muted-foreground italic">
+                                                <Clock className="w-4 h-4 text-emerald-500" /> Duration (MIN)
+                                            </label>
+                                            <input
+                                                type="text"
+                                                value={mDuration}
+                                                onChange={(e) => setMDuration(e.target.value)}
+                                                placeholder="e.g. 20"
+                                                className="w-full bg-zinc-900/50 border-none ring-1 ring-white/10 rounded-2xl px-5 py-3 focus:ring-2 focus:ring-amber-500 outline-none text-sm font-black italic"
+                                            />
+                                        </div>
+                                    )}
+
+                                    {(!pendingScrapedData?.tags || pendingScrapedData?.tags.length === 0) && (
+                                        <div className="space-y-2">
+                                            <label className="text-[10px] font-black uppercase tracking-widest flex items-center gap-2 text-muted-foreground italic">
+                                                <Tag className="w-4 h-4 text-blue-500" /> Tags (Comma Separated)
+                                            </label>
+                                            <input
+                                                type="text"
+                                                value={mTags}
+                                                onChange={(e) => setMTags(e.target.value)}
+                                                placeholder="e.g. pov, amateur..."
+                                                className="w-full bg-zinc-900/50 border-none ring-1 ring-white/10 rounded-2xl px-5 py-3 focus:ring-2 focus:ring-amber-500 outline-none text-sm font-black italic"
+                                            />
+                                        </div>
+                                    )}
+                                </div>
+                                <div className="flex gap-3">
+                                    <button
+                                        onClick={() => {
+                                            setScrapedData({
+                                                ...pendingScrapedData,
+                                                title: mTitle || pendingScrapedData.title,
+                                                performer: mPerformer || pendingScrapedData.performer,
+                                                duration: mDuration || pendingScrapedData.duration,
+                                                tags: mTags ? mTags.split(',').map(t => t.trim()).filter(Boolean) : pendingScrapedData.tags
+                                            });
+                                            setShowMissingDataPrompt(false);
+                                            setShowManual(false);
+                                        }}
+                                        className="flex-1 py-3 bg-amber-600 hover:bg-amber-500 text-white font-black uppercase tracking-[0.2em] rounded-xl shadow-lg shadow-amber-900/20 transition-all active:scale-95 text-[10px] italic"
+                                    >
+                                        Save & Continue
+                                    </button>
+                                    <button
+                                        onClick={() => {
+                                            setScrapedData(pendingScrapedData);
+                                            setShowMissingDataPrompt(false);
+                                            setShowManual(false);
+                                        }}
+                                        className="flex-1 py-3 bg-zinc-900 hover:bg-zinc-800 text-zinc-500 font-black uppercase tracking-widest rounded-xl border border-white/5 transition-all text-[10px] italic"
+                                    >
+                                        Ignore Missing Info
+                                    </button>
+                                </div>
+                            </DialogContent>
+                        </Dialog>
+
                         {/* Manual Entry Form (Collapsible) */}
                         {showManual && (
                             <motion.form
@@ -645,6 +762,37 @@ const DashboardPage = () => {
                                             placeholder="Manually identify resource..."
                                             className="w-full bg-zinc-900/50 border-none ring-1 ring-white/10 rounded-2xl px-5 py-3 focus:ring-2 focus:ring-emerald-500 outline-none text-sm font-black italic"
                                         />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-[10px] font-black uppercase tracking-widest flex items-center gap-2 text-muted-foreground italic">
+                                            <Layers className="w-4 h-4 text-emerald-500" /> Content Type
+                                        </label>
+                                        <div className="flex gap-2">
+                                            <button
+                                                type="button"
+                                                onClick={() => setMType("Real Life")}
+                                                className={cn(
+                                                    "flex-1 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all italic border",
+                                                    mType === "Real Life"
+                                                        ? "bg-emerald-500/20 text-emerald-500 border-emerald-500/30"
+                                                        : "bg-zinc-900/50 text-zinc-500 border-white/5 hover:bg-zinc-800"
+                                                )}
+                                            >
+                                                Real Life
+                                            </button>
+                                            <button
+                                                type="button"
+                                                onClick={() => setMType("Animation")}
+                                                className={cn(
+                                                    "flex-1 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all italic border",
+                                                    mType === "Animation"
+                                                        ? "bg-blue-500/20 text-blue-500 border-blue-500/30"
+                                                        : "bg-zinc-900/50 text-zinc-500 border-white/5 hover:bg-zinc-800"
+                                                )}
+                                            >
+                                                Animation
+                                            </button>
+                                        </div>
                                     </div>
                                     <div className="grid gap-6 md:grid-cols-2">
                                         <div className="space-y-2">
