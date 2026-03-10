@@ -196,9 +196,9 @@ export default function PersonalProfilePage() {
                         </div>
                         <button
                             onClick={() => setShowAvatarPicker(!showAvatarPicker)}
-                            className="absolute -bottom-1.5 -right-1.5 bg-zinc-900 border border-white/10 p-1.5 sm:p-2 rounded-xl shadow-lg hover:bg-blue-600 transition-all"
+                            className="absolute bottom-0 right-0 bg-zinc-900 border border-white/10 p-1.5 sm:p-2 rounded-full shadow-lg hover:bg-blue-600 transition-all"
                         >
-                            <Camera className="w-3 h-3 text-white" />
+                            <Camera className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-white" />
                         </button>
                         <AnimatePresence>
                             {showAvatarPicker && (
