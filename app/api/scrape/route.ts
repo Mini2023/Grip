@@ -27,6 +27,7 @@ const NOISE_TAGS = [
     'xxx', 'pornhub', 'xvideos', 'xnxx', 'redtube', 'tube', 'hub',
     'com', 'www', 'http', 'https', 'net', 'loading', 'download',
     'stream', 'mobile', 'desktop', 'app', 'premium', 'exclusive',
+    'imageboard', 'rule', 'webm', 'mp4', 'gif', 'jpg', 'png', 'video', 'movies', 'movie',
 ];
 
 // ── Hilfsfunktion: HTML-Entities dekodieren ───────────────────────────────────
@@ -49,6 +50,8 @@ function rankAndFilterTags(rawTags: string[], limit = 10): string[] {
             .filter(t => t.length > 1 && t.length < 50)
             .filter(t => !NOISE_TAGS.includes(t))
             .filter(t => !/^\d+$/.test(t))
+            .filter(t => !/^\d+p$/.test(t))
+            .filter(t => !/^\d+k$/.test(t))
     ));
 
     // Bekannte Hot-Tags zuerst, dann der Rest
