@@ -1,7 +1,6 @@
 # ⚡ Grip
 ### *Self-Mastery and habit tracking Platform*
 
-> **"What gets measured, gets managed. What gets logged with a regret slider, gets rethought."**
 
 [![Built with Next.js](https://img.shields.io/badge/Next.js-14-black?style=for-the-badge&logo=next.js)](https://nextjs.org)
 [![Supabase](https://img.shields.io/badge/Supabase-Database-3ECF8E?style=for-the-badge&logo=supabase)](https://supabase.com)
@@ -12,7 +11,7 @@
 
 ## 🎯 Mission Briefing
 
-Grip combines **anti fab** with **habit tracking** to help you master yourself and get detailed insights into your preferences and behaviors.
+Grip combines **anti fab** with **habit tracking** to help you master yourself and get detailed insights into your preferences and behaviors, while also being able to connect with friends and compare for even more motivation.
 
 Track the content you consume, your habits, and your progress towards your goals. 
 
@@ -33,7 +32,7 @@ Track the content you consume, your habits, and your progress towards your goals
 ### 🔬 Extraction Lab (Dashboard)
 The primary data-entry interface. Two ingestion modes:
 
-- **Link Intelligence Mode** — Paste a URL (Pornhub, Rule34, etc.), hit *Analyze Link*, and the scraper auto-extracts title, performer, tags, duration, and thumbnail. A real-time **Regret Score slider** (1–10) lets you rate the session before committing it to the archive.
+- **Link Intelligence Mode** — Paste a URL (Pornhub, Rule34, etc.), hit *Analyze Link*, and the scraper auto-extracts title, performer, tags, duration, content type and thumbnail. A real-time **Regret Score slider** (1–10) lets you rate the session before committing it to the archive.
 - **Manual Override** — For offline incidents or when discretion requires no URL trail. Full form with category tags, duration, and performer fields.
 
 Both paths write to the same Supabase `sessions` table. Both earn XP. Neither judges you.
@@ -55,8 +54,8 @@ Turn your session history into actionable intelligence.
 
 - **Behavior Timeline** — Monthly session frequency chart.
 - **Category Breakdown** — Pie chart of your most-logged content categories.
-- **Type Mix** — Real Life vs. Animation/Art ratio.
-- **Behavior Shift** — Custom A/B tag comparison over time. Select any two tags and see which one is trending. Useful. Slightly uncomfortable.
+- **Type Mix** — Real Life vs. Animation/Art and Video vs. Picture/Illustration ratio.
+- **Behavior Shift** — Custom A/B tag comparison over time. Select any two tags and see which one is trending. 
 - **Spotlight Performer** — Frequency analysis for a specific performer across your archive.
 - **Regret Heatmap** — Calendar view, colored by regret score. Looks like a GitHub contribution graph. Means something completely different.
 
@@ -117,15 +116,17 @@ Grip is installable as a Progressive Web App on iOS and Android.
 
 ## 🗺️ Roadmap
 
-- [ ] Streak freeze mechanic (spend XP to protect a streak)
+- [ ] AI intergration (gemini/huggingface API) for detailed recomendations
+- [ ] Montly report similar to Spotify Wrapped
 - [ ] Daily Quest system with rotating objectives
 - [ ] Export to CSV / PDF report
 - [ ] Mobile push notifications (PWA)
 - [ ] Partner accountability mode (opt-in streak sharing)
 - [ ] Custom badge creation
+- [ ] Browser extension for live logging (chrome web store/firefox extensions)
 
 ---
 
 
-**Built with questionable search history and excellent engineering judgment.**
+**Built with questionable search history.**
 
