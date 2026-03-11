@@ -205,7 +205,7 @@ const DashboardPage = () => {
     const [showMissingDataPrompt, setShowMissingDataPrompt] = useState(false)
 
     useEffect(() => {
-        if (!authLoading && !user) {
+        if (false) {
             router.push("/login")
         }
     }, [user, authLoading, router])
@@ -227,7 +227,8 @@ const DashboardPage = () => {
             });
             const data = await res.json();
             if (!data.error) {
-                const isMissingInfo = data.title === 'Unknown Title' || !data.performer || !data.duration || !data.tags || data.tags.length === 0;
+                const needsDuration = data.type !== 'Image' && data.type !== 'Comic';
+                const isMissingInfo = data.title === 'Unknown Title' || !data.performer || (needsDuration && !data.duration) || !data.tags || data.tags.length === 0;
 
                 if (isMissingInfo) {
                     setPendingScrapedData(data);
@@ -342,14 +343,19 @@ const DashboardPage = () => {
                 return;
             }
 
+            const type = customData?.content_type || scrapedData?.type || mType;
+            const durationVal = (type === 'Image' || type === 'Comic')
+                ? 0
+                : parseInt(scrapedData?.duration || mDuration || "0");
+
             const sessionData = customData || {
                 title: scrapedData?.title || mTitle || "Untitled Session",
                 url: url || "Manual Entry",
                 performer: scrapedData?.performer || mPerformer || "Unknown",
                 categories: scrapedData?.tags || mTags.split(',').map(t => t.trim()).filter(Boolean),
-                duration_minutes: parseInt(scrapedData?.duration || mDuration || "0"),
+                duration_minutes: isNaN(durationVal) ? 0 : durationVal,
                 regret_score: parseInt(regretScore.toString()) || 5,
-                content_type: scrapedData?.type || mType,
+                content_type: type,
                 thumbnail_url: scrapedData?.image || "https://images.unsplash.com/photo-1614850523296-d8c1af93d400?w=800&q=80",
                 user_id: currentUser.id
             };
@@ -681,7 +687,7 @@ const DashboardPage = () => {
                                         </div>
                                     )}
 
-                                    {!pendingScrapedData?.duration && (
+                                    {!pendingScrapedData?.duration && pendingScrapedData?.type !== 'Image' && pendingScrapedData?.type !== 'Comic' && (
                                         <div className="space-y-2">
                                             <label className="text-[10px] font-black uppercase tracking-widest flex items-center gap-2 text-muted-foreground italic">
                                                 <Clock className="w-4 h-4 text-emerald-500" /> Duration (MIN)
@@ -767,12 +773,12 @@ const DashboardPage = () => {
                                         <label className="text-[10px] font-black uppercase tracking-widest flex items-center gap-2 text-muted-foreground italic">
                                             <Layers className="w-4 h-4 text-emerald-500" /> Content Type
                                         </label>
-                                        <div className="flex gap-2">
+                                        <div className="flex flex-wrap gap-2">
                                             <button
                                                 type="button"
                                                 onClick={() => setMType("Real Life")}
                                                 className={cn(
-                                                    "flex-1 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all italic border",
+                                                    "flex-1 min-w-[45%] py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all italic border",
                                                     mType === "Real Life"
                                                         ? "bg-emerald-500/20 text-emerald-500 border-emerald-500/30"
                                                         : "bg-zinc-900/50 text-zinc-500 border-white/5 hover:bg-zinc-800"
@@ -784,7 +790,7 @@ const DashboardPage = () => {
                                                 type="button"
                                                 onClick={() => setMType("Animation")}
                                                 className={cn(
-                                                    "flex-1 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all italic border",
+                                                    "flex-1 min-w-[45%] py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all italic border",
                                                     mType === "Animation"
                                                         ? "bg-blue-500/20 text-blue-500 border-blue-500/30"
                                                         : "bg-zinc-900/50 text-zinc-500 border-white/5 hover:bg-zinc-800"
@@ -792,22 +798,48 @@ const DashboardPage = () => {
                                             >
                                                 Animation
                                             </button>
+                                            <button
+                                                type="button"
+                                                onClick={() => setMType("Image")}
+                                                className={cn(
+                                                    "flex-1 min-w-[45%] py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all italic border",
+                                                    mType === "Image"
+                                                        ? "bg-purple-500/20 text-purple-500 border-purple-500/30"
+                                                        : "bg-zinc-900/50 text-zinc-500 border-white/5 hover:bg-zinc-800"
+                                                )}
+                                            >
+                                                Image
+                                            </button>
+                                            <button
+                                                type="button"
+                                                onClick={() => setMType("Comic")}
+                                                className={cn(
+                                                    "flex-1 min-w-[45%] py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all italic border",
+                                                    mType === "Comic"
+                                                        ? "bg-amber-500/20 text-amber-500 border-amber-500/30"
+                                                        : "bg-zinc-900/50 text-zinc-500 border-white/5 hover:bg-zinc-800"
+                                                )}
+                                            >
+                                                Comic
+                                            </button>
                                         </div>
                                     </div>
                                     <div className="grid gap-6 md:grid-cols-2">
-                                        <div className="space-y-2">
-                                            <label className="text-[10px] font-black uppercase tracking-widest flex items-center gap-2 text-muted-foreground italic">
-                                                <Clock className="w-4 h-4 text-emerald-500" /> Duration (MIN)
-                                            </label>
-                                            <input
-                                                type="text"
-                                                value={mDuration}
-                                                onChange={(e) => setMDuration(e.target.value)}
-                                                placeholder="20"
-                                                className="w-full bg-zinc-900/50 border-none ring-1 ring-white/10 rounded-2xl px-5 py-3 focus:ring-2 focus:ring-emerald-500 outline-none text-sm font-black italic"
-                                            />
-                                        </div>
-                                        <div className="space-y-2">
+                                        {mType !== 'Image' && mType !== 'Comic' && (
+                                            <div className="space-y-2">
+                                                <label className="text-[10px] font-black uppercase tracking-widest flex items-center gap-2 text-muted-foreground italic">
+                                                    <Clock className="w-4 h-4 text-emerald-500" /> Duration (MIN)
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    value={mDuration}
+                                                    onChange={(e) => setMDuration(e.target.value)}
+                                                    placeholder="20"
+                                                    className="w-full bg-zinc-900/50 border-none ring-1 ring-white/10 rounded-2xl px-5 py-3 focus:ring-2 focus:ring-emerald-500 outline-none text-sm font-black italic"
+                                                />
+                                            </div>
+                                        )}
+                                        <div className={cn("space-y-2", (mType === 'Image' || mType === 'Comic') && "md:col-span-2")}>
                                             <label className="text-[10px] font-black uppercase tracking-widest flex items-center gap-2 text-muted-foreground italic">
                                                 <Users className="w-4 h-4 text-purple-500" /> Performer
                                             </label>

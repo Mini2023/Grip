@@ -21,6 +21,12 @@ const ANIMATION_KEYWORDS = [
     'digital art', 'futanari', 'furry', 'danbooru', 'gelbooru',
 ];
 
+// ── Comic-Schlüsselwörter für content_type Erkennung ─────────────────────────
+const COMIC_KEYWORDS = [
+    'imhentai', 'nhentai', 'ehentai', 'e-hentai', 'doujinshi', 'comic',
+    'manga', 'manhwa', 'webtoon'
+];
+
 // ── Rausch-Filter: Begriffe die nicht als Tags gespeichert werden ─────────────
 const NOISE_TAGS = [
     'video', 'watch', 'online', 'free', 'hd', 'porn', 'sex', 'rule34',
@@ -68,13 +74,38 @@ function rankAndFilterTags(rawTags: string[], limit = 10): string[] {
 function detectContentType(url: string, title: string, html: string): string {
     const combined = (url + ' ' + title).toLowerCase();
 
-    // Domain-spezifisch: immer Animation
+    // 1. Image by extension
+    if (/\.(jpg|jpeg|png|webp|gif|bmp)(\?.*)?$/i.test(url)) {
+        return 'Image';
+    }
+
+    // 2. Comic / Doujinshi domains
+    if (
+        url.includes('imhentai') || url.includes('nhentai') ||
+        url.includes('ehentai') || url.includes('e-hentai')
+    ) {
+        return 'Comic';
+    }
+
+    // Keyword-basiert in URL oder Titel für Comics
+    if (COMIC_KEYWORDS.some(kw => combined.includes(kw))) {
+        return 'Comic';
+    }
+
+    // 3. Domain-spezifisch: Animation vs Image
     if (
         url.includes('rule34.xxx') || url.includes('rule34.paheal') ||
         url.includes('danbooru.donmai') || url.includes('gelbooru.com') ||
-        url.includes('e621.net') || url.includes('anime-pictures') ||
-        url.includes('nhentai') || url.includes('hanime')
+        url.includes('e621.net') || url.includes('anime-pictures')
     ) {
+        // Falls explizit Video vorliegt (mp4, webm in url, oder html tags)
+        if (url.includes('.mp4') || url.includes('.webm') || html.includes('<video')) {
+            return 'Animation';
+        }
+        return 'Image';
+    }
+
+    if (url.includes('rule34video.com') || url.includes('hanime')) {
         return 'Animation';
     }
 
