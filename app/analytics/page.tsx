@@ -508,7 +508,7 @@ const AnalyticsPage = () => {
                             </div>
                             <div className="max-h-[70vh] overflow-y-auto no-scrollbar">
                                 <table className="w-full text-left border-collapse">
-                                    <thead>
+                                    <thead className="hidden md:table-header-group">
                                         <tr className="border-b border-white/5 bg-zinc-900/30">
                                             <th className="p-5 font-black text-[10px] uppercase tracking-widest text-zinc-500 italic">Timeline</th>
                                             <th className="p-5 font-black text-[10px] uppercase tracking-widest text-zinc-500 italic">Preview</th>
@@ -517,7 +517,7 @@ const AnalyticsPage = () => {
                                             <th className="p-5 font-black text-[10px] uppercase tracking-widest text-zinc-500 italic">Vector Status</th>
                                         </tr>
                                     </thead>
-                                    <tbody className="divide-y divide-white/5">
+                                    <tbody className="divide-y divide-white/5 hidden md:table-row-group">
                                         {sessions.slice().reverse().map((log, i) => (
                                             <tr key={i} className="hover:bg-white/[0.02] transition-colors group">
                                                 <td className="p-5 font-mono text-[11px] text-zinc-400">{new Date(log.created_at).toLocaleString()}</td>
@@ -532,17 +532,23 @@ const AnalyticsPage = () => {
                                                             />
                                                             <div className="absolute inset-0 bg-black/20" />
                                                         </div>
-                                                        {log.content_type === "Real Life" ? (
-                                                            <Camera className="w-4 h-4 text-blue-500" />
-                                                        ) : (
-                                                            <PenTool className="w-4 h-4 text-emerald-500" />
-                                                        )}
+                                                        <div className="flex flex-col max-w-[150px]">
+                                                            <span className="text-white text-xs font-bold line-clamp-1" title={log.title}>{log.title || 'Unknown Title'}</span>
+                                                            <div className="flex items-center gap-1 mt-1">
+                                                                {log.content_type === "Real Life" ? (
+                                                                    <Camera className="w-3 h-3 text-blue-500" />
+                                                                ) : (
+                                                                    <PenTool className="w-3 h-3 text-emerald-500" />
+                                                                )}
+                                                                <span className="text-[9px] text-zinc-500 uppercase">{log.content_type}</span>
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                 </td>
                                                 <td className="p-5">
                                                     <div className="flex items-center gap-2 font-black text-white italic text-xs uppercase tracking-tighter">
                                                         <Clock className="w-3.5 h-3.5 text-zinc-600" />
-                                                        {log.duration_minutes} MIN
+                                                        {log.content_type === 'Image' ? 'PICTURE' : log.content_type === 'Comic' ? 'COMIC' : `${log.duration_minutes} MIN`}
                                                     </div>
                                                 </td>
                                                 <td className="p-5">
@@ -566,6 +572,58 @@ const AnalyticsPage = () => {
                                         ))}
                                     </tbody>
                                 </table>
+
+                                {/* Mobile View (List) */}
+                                <div className="md:hidden space-y-4 p-4">
+                                    {sessions.slice().reverse().map((log, i) => (
+                                        <div key={i} className="p-4 rounded-2xl bg-zinc-900/40 border border-white/5 space-y-4 shadow-lg relative overflow-hidden group">
+                                            <div className="flex items-start gap-4">
+                                                <div className="w-24 h-16 rounded-xl bg-zinc-800 border border-white/5 overflow-hidden relative shrink-0 shadow-lg">
+                                                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                                                    <img
+                                                        src={log.thumbnail_url ? `/api/proxy-image?url=${encodeURIComponent(log.thumbnail_url)}` : "https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?w=200&h=120&fit=crop"}
+                                                        alt="Log Preview"
+                                                        className={cn("w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity", privacyMode && "blur-sm")}
+                                                    />
+                                                    <div className="absolute inset-0 bg-black/20" />
+                                                </div>
+                                                <div className="flex-1 min-w-0 space-y-1">
+                                                    <h4 className="text-white text-xs font-black line-clamp-2 italic uppercase tracking-tighter">{log.title || 'Unknown Title'}</h4>
+                                                    <div className="flex items-center gap-1.5">
+                                                        {log.content_type === "Real Life" ? (
+                                                            <Camera className="w-3 h-3 text-blue-500" />
+                                                        ) : (
+                                                            <PenTool className="w-3 h-3 text-emerald-500" />
+                                                        )}
+                                                        <span className="text-[9px] font-black uppercase tracking-widest text-zinc-500 italic">{log.content_type}</span>
+                                                    </div>
+                                                    <div className="text-[9px] text-zinc-600 font-mono tracking-tighter mt-1">{new Date(log.created_at).toLocaleString()}</div>
+                                                </div>
+                                            </div>
+
+                                            <div className="flex items-center justify-between border-t border-white/5 pt-3">
+                                                <div className="flex items-center gap-2 font-black text-white italic text-[10px] uppercase tracking-tighter">
+                                                    <Clock className="w-3.5 h-3.5 text-zinc-600" />
+                                                    {log.content_type === 'Image' ? 'PICTURE' : log.content_type === 'Comic' ? 'COMIC' : `${log.duration_minutes} MIN`}
+                                                </div>
+                                                <div className={cn(
+                                                    "text-[10px] font-black uppercase tracking-widest italic px-2 py-0.5 rounded",
+                                                    log.regret_score > 7 ? "text-red-500 bg-red-500/10" : log.regret_score > 4 ? "text-amber-500 bg-amber-500/10" : "text-emerald-500 bg-emerald-500/10"
+                                                )}>
+                                                    SCORE: {log.regret_score}.0
+                                                </div>
+                                            </div>
+
+                                            <div className={cn("flex flex-wrap gap-1.5 pt-1", privacyMode && "blur-sm")}>
+                                                {(log.categories || []).map((tag: string) => (
+                                                    <span key={tag} className="text-[8px] px-2 py-0.5 rounded-lg bg-zinc-900 border border-white/5 font-black uppercase tracking-tighter text-zinc-400 italic">
+                                                        {tag}
+                                                    </span>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
                             </div>
                             <div className="p-6 bg-zinc-900/50 border-t border-white/5 flex justify-center">
                                 <p className="text-[9px] font-black uppercase tracking-[0.2em] text-zinc-600 italic">End of telemetry stream.</p>
