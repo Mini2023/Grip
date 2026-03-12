@@ -121,15 +121,6 @@ Grip is installable as a Progressive Web App on iOS and Android.
 - Add to home screen via Safari/Chrome share menu
 - Enjoy the app like feeling
 
----
-
-## 🔐 Privacy Architecture
-
-- All data is stored in your **own Supabase project** — nothing passes through Antigravity's servers.
-- RLS policies enforce that you can only read your own sessions unless another user has explicitly set their profile to `public` or you are mutual friends.
-- The link scraper runs server-side (`/api/scrape`) — no URLs are logged server-side beyond the current request.
-- **Neural Privacy** — AI analysis is processed with strict safety settings and minimal data overhead to maintain your anonymity.
-- Pseudonymous usernames. Real data. Zero third-party tracking.
 
 ---
 
