@@ -27,6 +27,25 @@ export const calculateLevel = (totalXP: number): UserXP => {
     };
 };
 
+export const calculateStreakMinutes = (sessions: any[], profileCreatedAt?: string): number => {
+    if (!sessions || sessions.length === 0) {
+        if (!profileCreatedAt) return 0;
+        const start = new Date(profileCreatedAt).getTime();
+        const now = Date.now();
+        return Math.max(0, Math.floor((now - start) / (1000 * 60)));
+    }
+
+    // Sort sessions by date (newest first)
+    const sorted = [...sessions].sort((a, b) =>
+        new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+    );
+
+    const lastSession = new Date(sorted[0].created_at).getTime();
+    const now = Date.now();
+    const diffMs = now - lastSession;
+    return Math.max(0, Math.floor(diffMs / (1000 * 60)));
+};
+
 export const XP_REWARDS = {
     SHIELD_DAY: 10,
     LAB_ENTRY: 5,

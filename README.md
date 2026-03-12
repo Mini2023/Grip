@@ -1,6 +1,7 @@
 # ⚡ Grip
 ### *Self-Mastery and habit tracking Platform*
 
+> **"What gets measured, gets managed. What gets logged with a regret slider, gets rethought."**
 
 [![Built with Next.js](https://img.shields.io/badge/Next.js-14-black?style=for-the-badge&logo=next.js)](https://nextjs.org)
 [![Supabase](https://img.shields.io/badge/Supabase-Database-3ECF8E?style=for-the-badge&logo=supabase)](https://supabase.com)
@@ -32,7 +33,7 @@ Track the content you consume, your habits, and your progress towards your goals
 ### 🔬 Extraction Lab (Dashboard)
 The primary data-entry interface. Two ingestion modes:
 
-- **Link Intelligence Mode** — Paste a URL (Pornhub, Rule34, etc.), hit *Analyze Link*, and the scraper auto-extracts title, performer, tags, duration, content type and thumbnail. A real-time **Regret Score slider** (1–10) lets you rate the session before committing it to the archive.
+- **Link Intelligence Mode** — Choose between the fast **Standard Scraper** (Meta-tag parsing) or the premium **AI Deep Scrape** (Powered by Gemini). The AI mode uses neural analysis to extract precise metadata, performers, and optimized tags with specialized **Booru-syntax** for Rule34 and other imageboards.
 - **Manual Override** — For offline incidents or when discretion requires no URL trail. Full form with category tags, duration, and performer fields.
 
 Both paths write to the same Supabase `sessions` table. Both earn XP. Neither judges you.
@@ -58,6 +59,16 @@ Turn your session history into actionable intelligence.
 - **Behavior Shift** — Custom A/B tag comparison over time. Select any two tags and see which one is trending. 
 - **Spotlight Performer** — Frequency analysis for a specific performer across your archive.
 - **Regret Heatmap** — Calendar view, colored by regret score. Looks like a GitHub contribution graph. Means something completely different.
+
+---
+
+### 🤖 AI Intelligence Overlay
+A high-end recommendation engine that turns your data into actionable insights.
+
+- **Precision Recommendations** — AI analyzes your tracking profile (themes, formats, top performers) to suggest content tailored to your unique taste.
+- **Neural Search Logic** — Generates optimized, direct search links for Pornhub and Rule34.
+- **Booru Syntax Engine** — Automatically translates tags into valid Booru-syntax (underscores, lowercase, multi-tag separation) for surgically precise results on imageboards.
+- **Fallback Kaskade** — Robust backend utilizing a chain of Gemini models (3.0 Flash, 3.1 Lite, 2.5 Lite) to ensure 24/7 feature availability.
 
 ---
 
@@ -97,12 +108,11 @@ Levels are calculated as `floor(totalXP / 100) + 1`. Badge unlocks (Sentinel & C
 | **Charts** | Recharts |
 | **Notifications** | Sonner (toast) |
 | **Icons** | Lucide React |
+| **AI** | Google Gemini (Cascade Fallback Logic) |
 | **Language** | TypeScript 5 |
 | **Deployment** | Vercel |
 
 ---
-
-
 
 ## 📱 PWA Support
 
@@ -111,6 +121,15 @@ Grip is installable as a Progressive Web App on iOS and Android.
 - Add to home screen via Safari/Chrome share menu
 - Enjoy the app like feeling
 
+---
+
+## 🔐 Privacy Architecture
+
+- All data is stored in your **own Supabase project** — nothing passes through Antigravity's servers.
+- RLS policies enforce that you can only read your own sessions unless another user has explicitly set their profile to `public` or you are mutual friends.
+- The link scraper runs server-side (`/api/scrape`) — no URLs are logged server-side beyond the current request.
+- **Neural Privacy** — AI analysis is processed with strict safety settings and minimal data overhead to maintain your anonymity.
+- Pseudonymous usernames. Real data. Zero third-party tracking.
 
 ---
 
@@ -127,6 +146,4 @@ Grip is installable as a Progressive Web App on iOS and Android.
 
 ---
 
-
 **Built with questionable search history.**
-

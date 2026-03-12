@@ -7,6 +7,7 @@ import Navbar from "@/components/layout/Navbar"
 import BottomNav from "@/components/layout/BottomNav"
 import { cn } from "@/lib/utils"
 import { UserProvider } from "@/components/providers/UserProvider"
+import { GlobalModals } from "@/components/layout/GlobalModals"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -51,6 +52,7 @@ export default function RootLayout({
                 >
                     <ModeProvider>
                         <UserProvider>
+                            <GlobalModals />
                             <TooltipProvider>
                                 <Toaster position="top-right" theme="dark" />
                                 <div className="flex h-[100dvh] overflow-hidden">

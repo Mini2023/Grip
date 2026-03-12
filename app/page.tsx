@@ -1,4 +1,4 @@
-﻿"use client"
+"use client"
 
 import React, { useState, useEffect, useMemo } from "react"
 import { useMode } from "@/components/providers/ModeProvider"
@@ -6,7 +6,7 @@ import { useUser } from "@/components/providers/UserProvider"
 import {
     Shield, Beaker, Zap, Clock, TrendingUp, Plus, Smile, Tag,
     AlertTriangle, Users, HeartCrack, Trophy, ArrowRight, Award,
-    Eye, Moon, Sun, Timer, AlertCircle, FileText, Link as LinkIcon, Layers, Flower, ShieldAlert, Activity, ShieldCheck
+    Eye, Moon, Sun, Timer, AlertCircle, FileText, Link as LinkIcon, Layers, Flower, ShieldAlert, Activity, ShieldCheck, Sparkles, Brain
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogClose } from "@/components/ui/dialog"
@@ -19,6 +19,7 @@ import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { Loader2 } from "lucide-react"
 import { toast } from "sonner"
+import AISuggestions from "@/components/dashboard/AISuggestions"
 
 const EMERGENCY_QUOTES = [
     "Control the urge, or it controls you.",
@@ -198,6 +199,7 @@ const DashboardPage = () => {
     // Scraper State
     const [url, setUrl] = useState("")
     const [isScraping, setIsScraping] = useState(false)
+    const [scraperMode, setScraperMode] = useState<'standard' | 'ai'>('standard')
     const [scrapedData, setScrapedData] = useState<any>(null)
     const [showManual, setShowManual] = useState(false)
     const [isSaving, setIsSaving] = useState(false)
@@ -205,7 +207,7 @@ const DashboardPage = () => {
     const [showMissingDataPrompt, setShowMissingDataPrompt] = useState(false)
 
     useEffect(() => {
-        if (false) {
+        if (!authLoading && !user) {
             router.push("/login")
         }
     }, [user, authLoading, router])
@@ -217,7 +219,8 @@ const DashboardPage = () => {
             const { data: { session } } = await supabase.auth.getSession();
             const token = session?.access_token;
 
-            const res = await fetch('/api/scrape', {
+            const endpoint = scraperMode === 'standard' ? '/api/scrape' : '/api/scrape/ai';
+            const res = await fetch(endpoint, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -227,7 +230,7 @@ const DashboardPage = () => {
             });
             const data = await res.json();
             if (!data.error) {
-                const needsDuration = data.type !== 'Image' && data.type !== 'Comic';
+                const needsDuration = data.type !== 'Image' && data.type !== 'Comic' && data.type !== 'Digital Art';
                 const isMissingInfo = data.title === 'Unknown Title' || !data.performer || (needsDuration && !data.duration) || !data.tags || data.tags.length === 0;
 
                 if (isMissingInfo) {
@@ -249,7 +252,7 @@ const DashboardPage = () => {
             }
         } catch (err) {
             console.error("Scrape failed", err);
-            toast.error("Network error during extraction");
+            toast.error("Telemetry extraction failed.");
         } finally {
             setIsScraping(false);
         }
@@ -356,7 +359,7 @@ const DashboardPage = () => {
                 duration_minutes: isNaN(durationVal) ? 0 : durationVal,
                 regret_score: parseInt(regretScore.toString()) || 5,
                 content_type: type,
-                thumbnail_url: scrapedData?.image || "https://images.unsplash.com/photo-1614850523296-d8c1af93d400?w=800&q=80",
+                thumbnail_url: (scraperMode === 'ai' ? "https://images.unsplash.com/photo-1614850523296-d8c1af93d400?w=800&q=80" : scrapedData?.image) || "https://images.unsplash.com/photo-1614850523296-d8c1af93d400?w=800&q=80",
                 user_id: currentUser.id
             };
 
@@ -383,10 +386,12 @@ const DashboardPage = () => {
                     (allSessions.length * 5) +
                     allSessions.reduce((sum, s) => sum + (s.regret_score || 0), 0) * 2;
 
-                // 3. Write updated XP back to profiles
+                // 3. Write updated XP and current_streak_start back to profiles
                 const { data: xpUpdateData, error: xpError } = await supabase
                     .from('profiles')
-                    .update({ xp: newTotalXP })
+                    .update({ 
+                        xp: newTotalXP
+                    })
                     .eq('id', currentUser.id)
                     .select('xp')
                     .single();
@@ -487,6 +492,33 @@ const DashboardPage = () => {
                         {/* URL Entry Point */}
                         {!scrapedData && (
                             <div className="space-y-4">
+                                {/* Scraper Mode Toggle */}
+                                <div className="flex gap-3 p-1.5 bg-zinc-900/50 rounded-2xl border border-white/5 max-w-sm mx-auto sm:mx-0">
+                                    <button
+                                        onClick={() => setScraperMode('standard')}
+                                        className={cn(
+                                            "flex-1 flex items-center justify-center gap-2 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all italic",
+                                            scraperMode === 'standard' 
+                                                ? "bg-zinc-800 text-white shadow-lg" 
+                                                : "text-zinc-600 hover:text-zinc-400"
+                                        )}
+                                    >
+                                        Standard Scraper
+                                    </button>
+                                    <button
+                                        onClick={() => setScraperMode('ai')}
+                                        className={cn(
+                                            "flex-1 flex items-center justify-center gap-2 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all italic relative overflow-hidden group",
+                                            scraperMode === 'ai' 
+                                                ? "bg-purple-900/30 text-purple-400 border border-purple-500/20 shadow-[0_0_15px_rgba(168,85,247,0.1)]" 
+                                                : "text-zinc-600 hover:text-zinc-400 border border-transparent"
+                                        )}
+                                    >
+                                        <Sparkles className={cn("w-3 h-3", scraperMode === 'ai' ? "text-purple-400" : "text-zinc-600")} />
+                                        AI Deep Scrape
+                                    </button>
+                                </div>
+
                                 <div className="p-3 rounded-[2rem] bg-zinc-900/80 border border-white/5 shadow-inner flex flex-col sm:flex-row items-center gap-3 group focus-within:border-emerald-500/50 transition-all">
                                     <div className="flex-1 flex items-center gap-4 px-4 w-full">
                                         <LinkIcon className="w-5 h-5 text-zinc-500 shrink-0" />
@@ -501,11 +533,23 @@ const DashboardPage = () => {
                                     <button
                                         disabled={isScraping || !url}
                                         onClick={handleScrape}
-                                        className="w-full sm:w-auto px-8 py-4 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 text-white font-black text-xs uppercase tracking-widest rounded-3xl transition-all shadow-xl shadow-emerald-900/30 flex items-center justify-center gap-2 italic"
+                                        className={cn(
+                                            "w-full sm:w-auto px-8 py-4 font-black text-xs uppercase tracking-widest rounded-3xl transition-all shadow-xl flex items-center justify-center gap-2 italic",
+                                            scraperMode === 'ai' 
+                                                ? "bg-purple-600 hover:bg-purple-500 shadow-purple-900/30 text-white" 
+                                                : "bg-emerald-600 hover:bg-emerald-500 shadow-emerald-900/30 text-white"
+                                        )}
                                     >
                                         {isScraping ? (
-                                            <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                                        ) : "Analyze Link"}
+                                            <div className="flex items-center gap-2">
+                                                <Loader2 className="w-4 h-4 animate-spin" />
+                                                <span className="text-[10px] animate-pulse">
+                                                    {scraperMode === 'ai' ? "AI Analysiert Seite..." : "Processing..."}
+                                                </span>
+                                            </div>
+                                        ) : (
+                                            scraperMode === 'ai' ? <><Brain className="w-4 h-4" /> AI Deep Scrape</> : "Analyze Link"
+                                        )}
                                     </button>
                                 </div>
                                 <div className="flex justify-center">
@@ -539,13 +583,22 @@ const DashboardPage = () => {
 
                                 <div className="flex flex-col md:flex-row gap-6 pt-4">
                                     <div className="w-full md:w-56 h-36 rounded-2xl bg-zinc-800 overflow-hidden relative border border-white/5 shrink-0 shadow-2xl">
-                                        {scrapedData.image ? (
+                                        {scrapedData.image && scraperMode !== 'ai' ? (
                                             /* eslint-disable-next-line @next/next/no-img-element */
                                             <img
                                                 src={`/api/proxy-image?url=${encodeURIComponent(scrapedData.image)}`}
                                                 alt="Thumbnail"
                                                 className="w-full h-full object-cover opacity-80"
                                             />
+                                        ) : scraperMode === 'ai' ? (
+                                            <div className="w-full h-full bg-gradient-to-br from-purple-900/40 to-emerald-900/40 flex flex-col items-center justify-center p-6 text-center space-y-3 relative group">
+                                                <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-20" />
+                                                <Brain className="w-12 h-12 text-purple-400 drop-shadow-[0_0_15px_rgba(168,85,247,0.5)]" />
+                                                <div className="space-y-1">
+                                                    <p className="text-[10px] font-black uppercase tracking-widest text-white italic">AI Intelligence</p>
+                                                    <p className="text-[8px] font-black uppercase tracking-[0.2em] text-purple-400 group-hover:text-emerald-400 transition-colors">Extraction Secured</p>
+                                                </div>
+                                            </div>
                                         ) : (
                                             <div className="w-full h-full flex items-center justify-center">
                                                 <Beaker className="w-10 h-10 text-zinc-700" />
@@ -687,7 +740,7 @@ const DashboardPage = () => {
                                         </div>
                                     )}
 
-                                    {!pendingScrapedData?.duration && pendingScrapedData?.type !== 'Image' && pendingScrapedData?.type !== 'Comic' && (
+                                    {!pendingScrapedData?.duration && pendingScrapedData?.type !== 'Image' && pendingScrapedData?.type !== 'Comic' && pendingScrapedData?.type !== 'Digital Art' && (
                                         <div className="space-y-2">
                                             <label className="text-[10px] font-black uppercase tracking-widest flex items-center gap-2 text-muted-foreground italic">
                                                 <Clock className="w-4 h-4 text-emerald-500" /> Duration (MIN)
@@ -825,7 +878,7 @@ const DashboardPage = () => {
                                         </div>
                                     </div>
                                     <div className="grid gap-6 md:grid-cols-2">
-                                        {mType !== 'Image' && mType !== 'Comic' && (
+                                        {mType !== 'Image' && mType !== 'Comic' && mType !== 'Digital Art' && (
                                             <div className="space-y-2">
                                                 <label className="text-[10px] font-black uppercase tracking-widest flex items-center gap-2 text-muted-foreground italic">
                                                     <Clock className="w-4 h-4 text-emerald-500" /> Duration (MIN)
@@ -839,7 +892,7 @@ const DashboardPage = () => {
                                                 />
                                             </div>
                                         )}
-                                        <div className={cn("space-y-2", (mType === 'Image' || mType === 'Comic') && "md:col-span-2")}>
+                                        <div className={cn("space-y-2", (mType === 'Image' || mType === 'Comic' || mType === 'Digital Art') && "md:col-span-2")}>
                                             <label className="text-[10px] font-black uppercase tracking-widest flex items-center gap-2 text-muted-foreground italic">
                                                 <Users className="w-4 h-4 text-purple-500" /> Performer
                                             </label>
@@ -929,6 +982,11 @@ const DashboardPage = () => {
                         </Link>
                     </div>
                 </motion.div>
+            </div>
+
+            {/* AI Intelligence Overlay */}
+            <div className="mt-8">
+                <AISuggestions />
             </div>
         </div>
     )

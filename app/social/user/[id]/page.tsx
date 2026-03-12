@@ -6,10 +6,11 @@ import {
     Shield, Zap, Trophy, ArrowLeft, Calendar, Users,
     CheckCircle2, Activity, Eye, Moon, Sun, Timer, AlertCircle,
     FileText, Link as LinkIcon, Layers, Flower, ShieldAlert, Award,
-    Lock, Tag, UserPlus, UserCheck, Loader2
+    Lock, Tag, UserPlus, UserCheck, Loader2, RefreshCw
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { BADGES, Badge } from "@/lib/badges"
+import { calculateStreakMinutes } from "@/lib/gamification"
 import { motion } from "framer-motion"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { supabase } from "@/lib/supabaseClient"
@@ -71,10 +72,14 @@ export default function UserProfileById() {
     const [friendStatus, setFriendStatus] = useState<string>("none")
     const [sendingReq, setSendingReq] = useState(false)
 
-    const calculateStreak = (start: string) => {
-        if (!start) return 0
-        return Math.max(0, Math.floor((Date.now() - new Date(start).getTime()) / 86_400_000))
-    }
+    const streakMinutes = useMemo(() => {
+        if (!profile || !profile.current_streak_start) return 0;
+        const start = new Date(profile.current_streak_start).getTime();
+        const now = Date.now();
+        return Math.max(0, Math.floor((now - start) / 60000));
+    }, [profile]);
+
+    const streak = Math.floor(streakMinutes / 1440);
 
     useEffect(() => {
         if (!id) return
@@ -215,7 +220,7 @@ export default function UserProfileById() {
 
     const displayName = profile.display_name || profile.username || "Anonymous"
     const initials = displayName.slice(0, 2).toUpperCase()
-    const streak = calculateStreak(profile.current_streak_start)
+    // streak is already defined from useMemo above
     const rankLevel = Math.floor((profile.xp || 0) / 100) + 1
     const joinDate = new Date(profile.created_at || Date.now()).toLocaleDateString(undefined, { month: "short", year: "numeric" })
 

@@ -54,19 +54,9 @@ async function addXP(userId: string, amount: number): Promise<boolean> {
 }
 
 export default function ShieldPage() {
-    const { user, sessions, userXP, refreshUserStats } = useUser()
+    const { user, sessions, userXP, refreshUserStats, streakMinutes } = useUser()
     const { isDeepShieldActive, activateDeepShield, setRelapseModalOpen } = useMode()
     const router = useRouter()
-
-    // ── Derive streak from sessions ───────────────────────────────────────────
-    const streakMinutes = useMemo(() => {
-        if (!sessions || sessions.length === 0) return 0
-        const sorted = [...sessions].sort((a, b) =>
-            new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-        )
-        const diffMs = Date.now() - new Date(sorted[0].created_at).getTime()
-        return Math.max(0, Math.floor(diffMs / 60000))
-    }, [sessions])
 
     const time = useMemo(() => ({
         days: Math.floor(streakMinutes / 1440),
@@ -203,12 +193,16 @@ export default function ShieldPage() {
                             </React.Fragment>
                         ))}
                     </div>
-                    {/* Cost of Failure banner */}
-                    <div className="relative z-10 px-5 py-3 bg-red-500/5 border border-red-500/10 rounded-2xl max-w-sm mx-auto">
-                        <p className="text-[10px] text-red-400 font-black italic uppercase tracking-widest">
-                            ⚠ Relapse would reset your <span className="text-red-300">{time.days}d {time.hours}h</span> streak
+                    {/* Report Lapse Action */}
+                    <button
+                        onClick={() => setRelapseModalOpen(true)}
+                        className="relative z-10 px-5 py-4 bg-red-500/10 border border-red-500/20 rounded-2xl max-w-sm mx-auto group/relapse hover:bg-red-500/20 transition-all active:scale-95"
+                    >
+                        <p className="text-[10px] text-red-500 font-black italic uppercase tracking-widest flex items-center gap-2">
+                            <HeartCrack className="w-3.5 h-3.5 group-hover/relapse:animate-pulse" />
+                            Report Lapse & Reset <span className="text-red-400">{time.days}d {time.hours}h</span> Streak
                         </p>
-                    </div>
+                    </button>
                 </div>
 
                 {/* Relapse Risk + Guardian Streak + Quick Escape */}

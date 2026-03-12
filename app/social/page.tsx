@@ -6,6 +6,7 @@ import { Users, Search, UserPlus, Check, X, Shield, Zap, Clock, Loader2, Trophy,
 import { supabase } from "@/lib/supabaseClient"
 import { cn } from "@/lib/utils"
 import { BADGES } from "@/lib/badges"
+import { calculateStreakMinutes } from "@/lib/gamification"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { motion, AnimatePresence } from "framer-motion"
 import { toast } from "sonner"
@@ -24,12 +25,12 @@ export default function SocialPage() {
     const [showPending, setShowPending] = useState(false)
     const [activityStream, setActivityStream] = useState<any[]>([])
 
-    const calculateStreak = (startDate: string) => {
-        if (!startDate) return 0
-        const start = new Date(startDate).getTime()
-        const now = new Date().getTime()
-        const diffDays = Math.floor((now - start) / (1000 * 60 * 60 * 24))
-        return Math.max(0, diffDays)
+    const getStreak = (friend: any) => {
+        // Use current_streak_start from profile as the fallback source of truth
+        // This value is now kept in sync by the backend/page.tsx
+        if (!friend.current_streak_start) return 0;
+        const diffMs = Date.now() - new Date(friend.current_streak_start).getTime();
+        return Math.max(0, Math.floor(diffMs / 86400000));
     }
 
     const fetchUser = async () => {
@@ -91,19 +92,20 @@ export default function SocialPage() {
 
         try {
             if (activeTab === "global") {
-                const { data } = await supabase
+                const query = supabase
                     .from('profiles')
                     .select('*')
-                    .order('xp', { ascending: false })
-                    .limit(50);
-
-                let sortedData = data || [];
-                if (sortBy === "streak") {
-                    sortedData.sort((a, b) => calculateStreak(b.current_streak_start) - calculateStreak(a.current_streak_start))
-                } else if (sortBy === "badges") {
-                    // fall back
+                
+                if (sortBy === "xp") {
+                    query.order('xp', { ascending: false });
+                } else if (sortBy === "streak") {
+                    // ARCHITECTURE FIX: Sort by the new DB column or start date
+                    query.order('current_streak', { ascending: false })
+                         .order('current_streak_start', { ascending: true });
                 }
-                setFriends(sortedData)
+
+                const { data } = await query.limit(50);
+                setFriends(data || [])
             } else if (activeTab === "friends" && user) {
                 const { data } = await supabase.from('friendships')
                     .select('sender_id, receiver_id, sender:sender_id(*), receiver:receiver_id(*)')
@@ -114,7 +116,11 @@ export default function SocialPage() {
                     const profiles = data.map((f: any) => f.sender_id === user.id ? f.receiver : f.sender).filter(Boolean);
                     let sortedData = [...profiles];
                     if (sortBy === "streak") {
-                        sortedData.sort((a, b) => calculateStreak(b.current_streak_start) - calculateStreak(a.current_streak_start))
+                        // Priority: integer column, then timestamp
+                        sortedData.sort((a, b) => {
+                            if (b.current_streak !== a.current_streak) return (b.current_streak || 0) - (a.current_streak || 0);
+                            return new Date(a.current_streak_start || 0).getTime() - new Date(b.current_streak_start || 0).getTime();
+                        })
                     } else if (sortBy === "xp") {
                         sortedData.sort((a, b) => (b.xp || 0) - (a.xp || 0))
                     }
@@ -131,6 +137,29 @@ export default function SocialPage() {
             setLoading(false)
         }
     }
+
+    const { friends: sortedFriends, userRank } = React.useMemo(() => {
+        if (!friends || friends.length === 0) return { friends: [], userRank: 0 };
+        
+        let list = [...friends];
+        if (sortBy === "streak") {
+            list.sort((a, b) => getStreak(b) - getStreak(a));
+        } else if (sortBy === "xp") {
+            list.sort((a, b) => (b.xp || 0) - (a.xp || 0));
+        }
+
+        const rank = list.findIndex(f => f.id === currentUser?.id) + 1;
+        
+        // If it's the global tab, we show the top list.
+        // If it's the friends tab, currentUser might not be in the list if the list only contains "friends".
+        // But for Global, it's essential.
+        
+        return { friends: list, userRank: rank };
+    }, [friends, sortBy, currentUser]);
+
+    const currentUserProfile = React.useMemo(() => {
+        return friends.find(f => f.id === currentUser?.id);
+    }, [friends, currentUser]);
 
     useEffect(() => {
         fetchSocialData()
@@ -202,7 +231,7 @@ export default function SocialPage() {
                     <p className="text-muted-foreground text-[10px] font-black uppercase tracking-[0.4em] italic mt-1">Collective Neural Integrity Network</p>
                 </div>
 
-                {/* Tabs + Bell — always one visible row */}
+                {/* Tabs + Actions (Search & Notif) */}
                 <div className="flex items-center gap-2">
                     <div className="flex flex-1 p-1 bg-zinc-900/50 border border-white/5 rounded-2xl backdrop-blur-xl">
                         {[
@@ -222,22 +251,31 @@ export default function SocialPage() {
                             </button>
                         ))}
                     </div>
-                    {/* Bell — always visible, always clickable */}
-                    <button
-                        onClick={() => setShowPending(!showPending)}
-                        className="relative p-3 bg-zinc-900/50 border border-white/5 rounded-2xl hover:bg-white/10 transition-colors flex items-center justify-center shrink-0"
-                        aria-label="Friend requests"
-                    >
-                        <Bell className="w-5 h-5 text-zinc-400" />
-                        {pendingRequests.length > 0 && (
-                            <span className="absolute -top-1.5 -right-1.5 min-w-[18px] h-[18px] bg-red-500 rounded-full text-[9px] font-black text-white flex items-center justify-center px-1 border-2 border-zinc-950">
-                                {pendingRequests.length}
-                            </span>
-                        )}
-                    </button>
+
+                    {/* Header Actions: Search & Notifications */}
+                    <div className="flex items-center gap-2 px-1">
+                        <button
+                            onClick={() => setActiveTab('search')}
+                            className="p-3 bg-zinc-900/50 border border-white/5 rounded-2xl hover:bg-white/10 transition-colors flex items-center justify-center shrink-0 text-zinc-400"
+                            title="Global Search"
+                        >
+                            <Search className="w-5 h-5" />
+                        </button>
+                        <button
+                            onClick={() => setShowPending(!showPending)}
+                            className="relative p-3 bg-zinc-900/50 border border-white/5 rounded-2xl hover:bg-white/10 transition-colors flex items-center justify-center shrink-0"
+                            aria-label="Notifications"
+                        >
+                            <Bell className="w-5 h-5 text-zinc-400" />
+                            {pendingRequests.length > 0 && (
+                                <span className="absolute -top-1.5 -right-1.5 min-w-[18px] h-[18px] bg-red-500 rounded-full text-[9px] font-black text-white flex items-center justify-center px-1 border-2 border-zinc-950">
+                                    {pendingRequests.length}
+                                </span>
+                            )}
+                        </button>
+                    </div>
                 </div>
             </header>
-
             <AnimatePresence>
                 {showPending && (
                     <motion.div
@@ -302,7 +340,7 @@ export default function SocialPage() {
                                                 </div>
                                                 <div className="flex flex-col">
                                                     <span className="text-base font-black text-white italic uppercase">{user.display_name || user.username}</span>
-                                                    <span className="text-[10px] text-emerald-500 font-black uppercase tracking-widest italic">{calculateStreak(user.current_streak_start)}d Clear</span>
+                                                    <span className="text-[10px] text-emerald-500 font-black uppercase tracking-widest italic">{getStreak(user)}d Clear</span>
                                                 </div>
                                             </div>
                                             <button
@@ -351,24 +389,73 @@ export default function SocialPage() {
                             </div>
 
                             <div className="space-y-4 px-2">
+                                {/* FIXED ME PROFILE */}
+                                {currentUserProfile && (
+                                    <div className="sticky top-0 z-20 pb-4 bg-background/80 backdrop-blur-md">
+                                        <div className="text-[8px] font-black text-blue-500 uppercase tracking-[0.3em] mb-2 pl-4 italic">Your Status</div>
+                                        <Link
+                                            href={`/social/user/${currentUserProfile.id}`}
+                                            className="p-6 rounded-[2.5rem] border-2 border-blue-500 bg-blue-500/10 shadow-[0_0_30px_rgba(59,130,246,0.2)] transition-all flex flex-col md:flex-row md:items-center justify-between group cursor-pointer gap-4 hover:scale-[1.01]"
+                                        >
+                                            <div className="flex items-center gap-6">
+                                                <div className="relative">
+                                                    <div className="w-16 h-16 rounded-2xl bg-blue-600 flex items-center justify-center font-black text-2xl border-2 border-white/10 shadow-xl italic text-white">
+                                                        {(currentUserProfile.display_name || currentUserProfile.username || 'ME').slice(0, 2).toUpperCase()}
+                                                    </div>
+                                                    <div className="absolute -top-3 -right-3 w-8 h-8 rounded-full flex items-center justify-center border-2 border-zinc-950 shadow-2xl bg-blue-500 text-white font-black text-[10px] italic">
+                                                        #{userRank}
+                                                    </div>
+                                                </div>
+                                                <div className="space-y-2">
+                                                    <div className="flex items-center gap-3">
+                                                        <span className="font-black text-white text-lg italic uppercase tracking-tighter">
+                                                            {currentUserProfile.display_name || currentUserProfile.username} (YOU)
+                                                        </span>
+                                                        <span className="text-[8px] bg-white/20 text-white px-2 py-0.5 rounded-full font-black tracking-widest uppercase border border-white/10">
+                                                            LVL {Math.floor((currentUserProfile.xp || 0) / 100) + 1}
+                                                        </span>
+                                                    </div>
+                                                    <div className="flex gap-2">
+                                                        <span className="text-xs font-black text-blue-200 italic uppercase">
+                                                            {currentUserProfile.xp || 0} XP
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div className="flex items-center justify-between md:flex-col md:items-end gap-1">
+                                                <div className="flex items-baseline gap-1.5">
+                                                    <span className="text-4xl font-black italic text-white">{getStreak(currentUserProfile)}</span>
+                                                    <span className="text-[10px] font-black text-blue-200 tracking-widest italic">DAYS</span>
+                                                </div>
+                                                <span className="text-[8px] font-black uppercase tracking-widest text-white transition-all">View Own Intel Profile →</span>
+                                            </div>
+                                        </Link>
+                                        <div className="h-px w-full bg-white/5 mt-4" />
+                                    </div>
+                                )}
+
                                 {loading ? (
                                     [1, 2, 3, 4].map(i => <div key={i} className="h-28 rounded-[2.5rem] border bg-card/20 animate-pulse" />)
-                                ) : friends.length === 0 ? (
+                                ) : sortedFriends.length === 0 ? (
                                     <div className="text-center py-20 bg-white/[0.02] rounded-[3rem] border border-dashed border-white/5">
                                         <p className="text-[10px] font-black text-zinc-500 uppercase tracking-widest italic">No records found.</p>
                                     </div>
                                 ) : (
-                                    friends.map((friend, index) => {
-                                        const days = calculateStreak(friend.current_streak_start)
+                                    sortedFriends.filter(f => f.id !== currentUser?.id).map((friend, index) => {
+                                        const days = getStreak(friend)
                                         const label = friend.display_name || friend.username || '??'
                                         const userAvatar = label.slice(0, 2).toUpperCase()
+                                        // Since we filtered ourselves out, we recalcalculate rank for medals
+                                        // But original index in friends is better if we want true medal positions
+                                        const originalIndex = friends.findIndex(f => f.id === friend.id);
+                                        
                                         return (
                                             <Link
                                                 href={`/social/user/${friend.id}`}
                                                 key={friend.id}
                                                 className={cn(
                                                     "p-6 rounded-[2.5rem] border bg-card/20 backdrop-blur-md transition-all flex flex-col md:flex-row md:items-center justify-between group cursor-pointer gap-4 hover:scale-[1.01]",
-                                                    index === 0 && activeTab === 'global' ? "border-amber-500/30 bg-amber-500/5 shadow-2xl shadow-amber-500/5" : "hover:border-blue-500/20"
+                                                    originalIndex === 0 && activeTab === 'global' ? "border-amber-500/30 bg-amber-500/5 shadow-2xl shadow-amber-500/5" : "hover:border-blue-500/20"
                                                 )}
                                             >
                                                 <div className="flex items-center gap-6">
@@ -376,12 +463,16 @@ export default function SocialPage() {
                                                         <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-zinc-800 to-zinc-700 flex items-center justify-center font-black text-2xl border-2 border-white/5 shadow-xl group-hover:rotate-3 transition-transform italic">
                                                             {userAvatar}
                                                         </div>
-                                                        {index < 3 && activeTab === 'global' && (
+                                                        {(originalIndex < 3 && activeTab === 'global') ? (
                                                             <div className={cn(
                                                                 "absolute -top-3 -right-3 w-8 h-8 rounded-full flex items-center justify-center border-2 border-zinc-950 shadow-2xl",
-                                                                index === 0 ? "bg-amber-500" : index === 1 ? "bg-zinc-300" : "bg-orange-600"
+                                                                originalIndex === 0 ? "bg-amber-500" : originalIndex === 1 ? "bg-zinc-300" : "bg-orange-600"
                                                             )}>
                                                                 <Medal className="w-4 h-4 text-zinc-950" />
+                                                            </div>
+                                                        ) : (
+                                                            <div className="absolute -top-2 -right-2 bg-zinc-900 border border-white/10 w-6 h-6 rounded-full flex items-center justify-center text-[8px] font-black italic text-zinc-400">
+                                                                #{originalIndex + 1}
                                                             </div>
                                                         )}
                                                     </div>
@@ -405,7 +496,7 @@ export default function SocialPage() {
                                                     <div className="flex items-baseline gap-1.5">
                                                         <span className={cn(
                                                             "text-4xl font-black italic",
-                                                            index === 0 && activeTab === 'global' ? "text-amber-500" : "text-white"
+                                                            originalIndex === 0 && activeTab === 'global' ? "text-amber-500" : "text-white"
                                                         )}>{days}</span>
                                                         <span className="text-[10px] font-black text-zinc-500 tracking-widest italic">DAYS</span>
                                                     </div>

@@ -1,7 +1,7 @@
 "use client"
 
 import React, { createContext, useContext, useState, useEffect, useCallback } from "react"
-import { calculateLevel, UserXP } from "@/lib/gamification"
+import { calculateLevel, UserXP, calculateStreakMinutes } from "@/lib/gamification"
 import { supabase } from "@/lib/supabaseClient"
 import { User } from "@supabase/supabase-js"
 
@@ -23,7 +23,11 @@ interface UserContextType {
     user: User | null;
     loading: boolean;
     sessions: any[];
-    /** Re-fetches sessions AND profile XP from the database */
+    currentStreak: number;
+    streakMinutes: number;
+    /** The actual timestamp from the DB when the streak started (last relapse) */
+    streakStart: string | null;
+    /** Re-fetches sessions AND profile data from the database */
     refreshUserStats: () => Promise<void>;
 }
 
@@ -33,8 +37,9 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
     const [user, setUser] = useState<User | null>(null);
     const [loading, setLoading] = useState(true);
     const [sessions, setSessions] = useState<any[]>([]);
-    // XP is now stored directly from profiles.xp (the DB is the source of truth)
+    // Single source of truth from profiles table
     const [profileXP, setProfileXP] = useState<number>(0);
+    const [streakStart, setStreakStart] = useState<string | null>(null);
 
     const [notifications, setNotifications] = useState<Notification[]>([]);
 
@@ -51,16 +56,17 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
         }
     }, []);
 
-    // ── fetch profile XP from DB (single source of truth) ────────────────────
-    const fetchProfileXP = useCallback(async (userId: string) => {
+    // ── fetch profile data from DB (single source of truth) ──────────────────
+    const fetchProfileData = useCallback(async (userId: string) => {
         const { data, error } = await supabase
             .from('profiles')
-            .select('xp')
+            .select('xp, current_streak_start')
             .eq('id', userId)
             .single();
 
         if (!error && data) {
             setProfileXP(data.xp ?? 0);
+            setStreakStart(data.current_streak_start);
         }
     }, []);
 
@@ -69,10 +75,47 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
         if (user) {
             await Promise.all([
                 fetchSessions(user.id),
-                fetchProfileXP(user.id),
+                fetchProfileData(user.id),
             ]);
         }
     };
+
+    // ── ensure profile exists (The Callback) ──────────────────────────────────
+    const ensureUserProfile = useCallback(async (userId: string, email?: string) => {
+        try {
+            // Check if profile exists
+            const { data, error } = await supabase
+                .from('profiles')
+                .select('id')
+                .eq('id', userId)
+                .single();
+
+            if (error && error.code === 'PGRST116') { // PGRST116 is "no rows returned"
+                console.log('No profile found, creating one for authenticated user...');
+                const { error: insertError } = await supabase
+                    .from('profiles')
+                    .insert([
+                        { 
+                            id: userId, 
+                            email: email,
+                            xp: 0,
+                            current_streak_start: new Date().toISOString(),
+                            created_at: new Date().toISOString()
+                        }
+                    ]);
+                
+                if (insertError) {
+                    console.error('Error creating profile:', insertError);
+                } else {
+                    console.log('Profile created successfully.');
+                }
+            } else if (error) {
+                console.error('Error checking profile:', error);
+            }
+        } catch (e) {
+            console.error('Unexpected error in ensureUserProfile:', e);
+        }
+    }, []);
 
     // ── auth bootstrap ────────────────────────────────────────────────────────
     useEffect(() => {
@@ -81,9 +124,12 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
             const currentUser = session?.user ?? null;
             setUser(currentUser);
             if (currentUser) {
+                // Ensure profile exists ONLY after auth is confirmed
+                await ensureUserProfile(currentUser.id, currentUser.email);
+                
                 await Promise.all([
                     fetchSessions(currentUser.id),
-                    fetchProfileXP(currentUser.id),
+                    fetchProfileData(currentUser.id),
                 ]);
             }
             setLoading(false);
@@ -91,21 +137,25 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
 
         getSession();
 
-        const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+        const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
             const currentUser = session?.user ?? null;
             setUser(currentUser);
             if (currentUser) {
+                // Handle callback on auth state change (like after signup/login)
+                await ensureUserProfile(currentUser.id, currentUser.email);
+                
                 fetchSessions(currentUser.id);
-                fetchProfileXP(currentUser.id);
+                fetchProfileData(currentUser.id);
             } else {
                 setSessions([]);
                 setProfileXP(0);
+                setStreakStart(null);
             }
             setLoading(false);
         });
 
         return () => subscription.unsubscribe();
-    }, [fetchSessions, fetchProfileXP]);
+    }, [fetchSessions, fetchProfileData, ensureUserProfile]);
 
     const markAllRead = () => {
         setNotifications(prev => prev.map(n => ({ ...n, read: true })));
@@ -126,6 +176,13 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
     const userXP = calculateLevel(profileXP);
     const unreadCount = notifications.filter(n => !n.read).length;
 
+    const streakMinutes = React.useMemo(() => {
+        if (!streakStart) return 0;
+        const start = new Date(streakStart).getTime();
+        const diffMs = Date.now() - start;
+        return Math.max(0, Math.floor(diffMs / 60000));
+    }, [streakStart]);
+
     return (
         <UserContext.Provider value={{
             userXP,
@@ -136,6 +193,9 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
             user,
             loading,
             sessions,
+            currentStreak: Math.floor(streakMinutes / 1440),
+            streakMinutes,
+            streakStart,
             refreshUserStats
         }}>
             {children}
