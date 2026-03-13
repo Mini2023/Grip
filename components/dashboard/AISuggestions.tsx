@@ -3,7 +3,7 @@
 
 import React, { useState } from 'react';
 import { useUser } from '@/components/providers/UserProvider';
-import { BrainCircuit, Loader2, Sparkles, User, Tag, Play, ExternalLink, Search, Image, Video } from 'lucide-react';
+import { BrainCircuit, Loader2, Sparkles, User, Tag, Play, ExternalLink, Search, Image as ImageIcon, Video } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
 
@@ -110,7 +110,7 @@ const AISuggestions = () => {
                                                 onClick={(e) => { e.preventDefault(); e.stopPropagation(); window.open(getRule34Url(v.search_query), '_blank'); }}
                                                 className="flex-1 flex items-center justify-center gap-1.5 px-2 py-1.5 bg-white/[0.03] hover:bg-emerald-500/10 border border-white/5 hover:border-emerald-500/30 rounded-lg text-[8px] font-black uppercase tracking-tighter transition-all group/btn shadow-lg"
                                             >
-                                                <Image className="w-2.5 h-2.5 text-zinc-600 group-hover/btn:text-emerald-500 transition-colors" />
+                                                <ImageIcon className="w-2.5 h-2.5 text-zinc-600 group-hover/btn:text-emerald-500 transition-colors" />
                                                 <span className="text-zinc-600 group-hover/btn:text-emerald-500 transition-colors">Rule34</span>
                                             </button>
                                             <button
@@ -156,7 +156,7 @@ const AISuggestions = () => {
                                                 onClick={(e) => { e.preventDefault(); e.stopPropagation(); window.open(getRule34Url(a.search_query), '_blank'); }}
                                                 className="flex-1 flex items-center justify-center gap-1.5 px-2 py-1.5 bg-white/[0.03] hover:bg-emerald-500/10 border border-white/5 hover:border-emerald-500/30 rounded-lg text-[8px] font-black uppercase tracking-tighter transition-all group/btn shadow-lg"
                                             >
-                                                <Image className="w-2.5 h-2.5 text-zinc-600 group-hover/btn:text-emerald-500 transition-colors" />
+                                                <ImageIcon className="w-2.5 h-2.5 text-zinc-600 group-hover/btn:text-emerald-500 transition-colors" />
                                                 <span className="text-zinc-600 group-hover/btn:text-emerald-500 transition-colors">Rule34</span>
                                             </button>
                                             <button
@@ -191,7 +191,7 @@ const AISuggestions = () => {
                                                 onClick={() => window.open(`https://rule34.xxx/index.php?page=post&s=list&tags=${t.rule34_query.replace(/ /g, '+')}`, '_blank')}
                                                 className="flex-1 flex items-center justify-center gap-1.5 px-2 py-2 bg-white/[0.03] hover:bg-emerald-500/10 border border-white/5 hover:border-emerald-500/30 rounded-xl text-[7px] font-black uppercase tracking-tighter transition-all group/btn  shadow-lg shadow-black/20"
                                             >
-                                                <Image className="w-2.5 h-2.5 text-zinc-600 group-hover/btn:text-emerald-500 transition-colors" />
+                                                <ImageIcon className="w-2.5 h-2.5 text-zinc-600 group-hover/btn:text-emerald-500 transition-colors" />
                                                 <span className="text-zinc-600 group-hover/btn:text-emerald-500 transition-colors">Rule34</span>
                                             </button>
                                             <button
@@ -219,7 +219,7 @@ const AISuggestions = () => {
                 ) : (
                     <div className="py-8 text-center bg-white/[0.01] border border-dashed border-white/5 rounded-3xl">
                         <p className="text-[10px] text-zinc-600 font-black uppercase tracking-widest italic">
-                            No active intelligence data. Click "Analyze Profile" to begin.
+                            No active intelligence data. Click &quot;Analyze Profile&quot; to begin.
                         </p>
                     </div>
                 )}
