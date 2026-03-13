@@ -52,8 +52,8 @@ const AISuggestions = () => {
     };
 
     return (
-        <div className="p-8 rounded-[2.5rem] border bg-card/40 backdrop-blur-md shadow-2xl space-y-6">
-            <div className="flex items-center justify-between">
+        <div className="p-5 sm:p-6 md:p-8 rounded-[2rem] sm:rounded-[2.5rem] border bg-card/40 backdrop-blur-md shadow-2xl space-y-6">
+            <div className="flex items-center justify-between gap-4">
                 <h2 className="font-black flex items-center gap-2 text-zinc-100 italic text-sm uppercase tracking-widest">
                     <BrainCircuit className="w-5 h-5 text-purple-500" />
                     AI Intelligence Overlay
@@ -97,7 +97,7 @@ const AISuggestions = () => {
                                         href={getSearchUrl(v.search_query)}
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="flex flex-col p-4 rounded-2xl bg-white/[0.03] border border-white/5 group transition-all hover:scale-[1.02] hover:bg-white/[0.05] hover:border-purple-500/30 hover:ring-1 hover:ring-purple-500/20 cursor-pointer relative overflow-hidden h-full"
+                                        className="flex flex-col p-3 sm:p-4 rounded-2xl bg-white/[0.03] border border-white/5 group transition-all hover:scale-[1.02] hover:bg-white/[0.05] hover:border-purple-500/30 hover:ring-1 hover:ring-purple-500/20 cursor-pointer relative overflow-hidden h-full"
                                     >
                                         <div className="flex justify-between items-start gap-2 mb-1">
                                             <p className="text-xs font-black text-white italic truncate uppercase flex-1">{v.title}</p>
@@ -105,7 +105,7 @@ const AISuggestions = () => {
                                         </div>
                                         <p className="text-[9px] text-zinc-500 leading-relaxed uppercase tracking-tight line-clamp-2 mb-4">{v.reason}</p>
                                         
-                                        <div className="flex gap-2 pt-3 mt-auto border-t border-white/5">
+                                        <div className="flex flex-col sm:flex-row gap-2 pt-3 mt-auto border-t border-white/5">
                                             <button
                                                 onClick={(e) => { e.preventDefault(); e.stopPropagation(); window.open(getRule34Url(v.search_query), '_blank'); }}
                                                 className="flex-1 flex items-center justify-center gap-1.5 px-2 py-1.5 bg-white/[0.03] hover:bg-emerald-500/10 border border-white/5 hover:border-emerald-500/30 rounded-lg text-[8px] font-black uppercase tracking-tighter transition-all group/btn shadow-lg"
@@ -138,20 +138,20 @@ const AISuggestions = () => {
                                         href={getSearchUrl(a.search_query)}
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="flex flex-col p-4 rounded-2xl bg-white/[0.03] border border-white/5 group transition-all hover:scale-[1.02] hover:bg-white/[0.05] hover:border-blue-500/30 hover:ring-1 hover:ring-blue-500/20 cursor-pointer h-full"
+                                        className="flex flex-col p-3 sm:p-4 rounded-2xl bg-white/[0.03] border border-white/5 group transition-all hover:scale-[1.02] hover:bg-white/[0.05] hover:border-blue-500/30 hover:ring-1 hover:ring-blue-500/20 cursor-pointer h-full"
                                     >
-                                        <div className="flex items-center justify-between w-full mb-3">
-                                            <div className="flex flex-col">
-                                                <span className="text-[10px] font-black text-white uppercase italic flex items-center gap-2">
+                                        <div className="flex items-center justify-between gap-2 w-full mb-3">
+                                            <div className="flex flex-col min-w-0 flex-1">
+                                                <span className="text-[10px] font-black text-white uppercase italic flex items-center gap-2 truncate">
                                                     {a.name}
                                                     <Search className="w-2.5 h-2.5 text-zinc-700 group-hover:text-blue-500 opacity-0 group-hover:opacity-100 transition-all" />
                                                 </span>
-                                                <span className="text-[8px] text-zinc-500 font-black uppercase tracking-tighter">{a.category}</span>
+                                                <span className="text-[8px] text-zinc-500 font-black uppercase tracking-tighter truncate">{a.category}</span>
                                             </div>
                                             <ExternalLink className="w-3 h-3 text-zinc-800 group-hover:text-blue-500 transition-colors" />
                                         </div>
 
-                                        <div className="flex gap-2 pt-3 mt-auto border-t border-white/5">
+                                        <div className="flex flex-col sm:flex-row gap-2 pt-3 mt-auto border-t border-white/5">
                                             <button
                                                 onClick={(e) => { e.preventDefault(); e.stopPropagation(); window.open(getRule34Url(a.search_query), '_blank'); }}
                                                 className="flex-1 flex items-center justify-center gap-1.5 px-2 py-1.5 bg-white/[0.03] hover:bg-emerald-500/10 border border-white/5 hover:border-emerald-500/30 rounded-lg text-[8px] font-black uppercase tracking-tighter transition-all group/btn shadow-lg"
@@ -179,14 +179,14 @@ const AISuggestions = () => {
                             </h3>
                             <div className="grid grid-cols-1 gap-3">
                                 {suggestions.recommended_tags.map((t, i) => (
-                                    <div key={i} className="p-4 rounded-2xl bg-white/[0.03] border border-white/5 space-y-4 group/tag transition-all hover:bg-white/[0.05] hover:border-emerald-500/30">
-                                        <div className="flex items-center justify-between">
+                                    <div key={i} className="p-3 sm:p-4 rounded-2xl bg-white/[0.03] border border-white/5 space-y-4 group/tag transition-all hover:bg-white/[0.05] hover:border-emerald-500/30">
+                                        <div className="flex items-center justify-between gap-4">
                                             <span className="text-[10px] font-black text-white hover:text-emerald-500 uppercase italic tracking-widest transition-colors">
                                                 #{t.display_name}
                                             </span>
                                             <Tag className="w-3 h-3 text-zinc-800 group-hover/tag:text-emerald-500 transition-colors" />
                                         </div>
-                                        <div className="flex gap-2">
+                                        <div className="flex flex-col sm:flex-row gap-2">
                                             <button
                                                 onClick={() => window.open(`https://rule34.xxx/index.php?page=post&s=list&tags=${t.rule34_query.replace(/ /g, '+')}`, '_blank')}
                                                 className="flex-1 flex items-center justify-center gap-1.5 px-2 py-2 bg-white/[0.03] hover:bg-emerald-500/10 border border-white/5 hover:border-emerald-500/30 rounded-xl text-[7px] font-black uppercase tracking-tighter transition-all group/btn  shadow-lg shadow-black/20"
