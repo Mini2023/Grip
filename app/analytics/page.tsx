@@ -90,7 +90,7 @@ const AnalyticsPage = () => {
 
         filteredSessions.forEach(s => {
             const date = new Date(s.created_at).toLocaleDateString(undefined, { day: '2-digit', month: '2-digit' });
-            if (!trendMap[date]) trendMap[date] = { date, duration: 0, regret: 0, frequency: 0, tagA: 0, tagB: 0 };
+            if (!trendMap[date]) trendMap[date] = { date, timestamp: new Date(s.created_at).getTime(), duration: 0, regret: 0, frequency: 0, tagA: 0, tagB: 0 };
 
             const dur = parseInt(s.duration_minutes) || 0;
             trendMap[date].duration += dur;
@@ -116,7 +116,7 @@ const AnalyticsPage = () => {
             }
         });
 
-        const trend = Object.values(trendMap);
+        const trend = Object.values(trendMap).sort((a: any, b: any) => a.timestamp - b.timestamp);
         const categories = Object.entries(categoriesMap)
             .sort((a, b) => b[1] - a[1])
             .slice(0, 5)
