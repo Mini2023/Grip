@@ -8,7 +8,7 @@ import {
 import {
     TrendingUp, PieChart as PieIcon, BarChart3, Layers, Activity,
     HeartCrack, Users, ShieldCheck, Zap, BrainCircuit, AlertCircle,
-    Clock, Camera, PenTool
+    Clock, Camera, PenTool, Network
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useMode } from "@/components/providers/ModeProvider"
@@ -484,6 +484,22 @@ const AnalyticsPage = () => {
                         className="whitespace-nowrap px-8 py-4 bg-red-600 hover:bg-red-500 text-white font-black text-[10px] uppercase tracking-[0.2em] rounded-2xl transition-all hover:scale-105 active:scale-95 shadow-lg shadow-red-900/30 md:ml-auto italic"
                     >
                         LOCK SHIELD
+                    </button>
+                </div>
+
+                {/* Neural Constellation CTA */}
+                <div className="pt-4 flex justify-center">
+                    <button
+                        onClick={() => router.push('/analytics/constellation-map')}
+                        className="group relative px-10 py-5 rounded-3xl bg-zinc-900 border border-emerald-500/20 hover:border-emerald-500/50 transition-all overflow-hidden shadow-lg hover:shadow-emerald-500/10"
+                    >
+                        <div className="absolute inset-0 bg-emerald-500/5 translate-y-full group-hover:translate-y-0 transition-transform duration-500" />
+                        <div className="relative flex items-center gap-3">
+                            <Network className="w-5 h-5 text-emerald-500 group-hover:animate-pulse" />
+                            <span className="text-xs font-black uppercase tracking-[0.4em] italic text-emerald-400 group-hover:text-emerald-300 transition-colors">
+                                Open Neural Constellation
+                            </span>
+                        </div>
                     </button>
                 </div>
 

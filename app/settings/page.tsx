@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useEffect, useState } from "react"
-import { Settings, LogOut, Moon, Lock, Save, User as UserIcon, Pencil, Loader2 } from "lucide-react"
+import { Settings, LogOut, Moon, Lock, Save, User as UserIcon, Pencil, Loader2, Sparkles, ExternalLink } from "lucide-react"
 import { useMode } from "@/components/providers/ModeProvider"
 import { useTheme } from "next-themes"
 import { Switch } from "@/components/ui/switch"
@@ -16,6 +16,10 @@ export default function SettingsPage() {
     const router = useRouter()
     const [userId, setUserId] = useState<string | null>(null)
     const [userEmail, setUserEmail] = useState<string>("")
+    const [createdAt, setCreatedAt] = useState<Date | null>(null)
+    const [daysToWrapped, setDaysToWrapped] = useState<number>(0)
+    const [hoursToWrapped, setHoursToWrapped] = useState<number>(0)
+    const [wrappedLoading, setWrappedLoading] = useState(false)
 
     // Display name
     const [displayName, setDisplayName] = useState("")
@@ -34,19 +38,38 @@ export default function SettingsPage() {
                 setUserEmail(user.email || "")
                 const { data } = await supabase
                     .from('profiles')
-                    .select('show_stats_publicly, show_preferences_publicly, display_name, username')
+                    .select('show_stats_publicly, show_preferences_publicly, display_name, username, created_at')
                     .eq('id', user.id)
                     .single()
                 if (data) {
                     setStatsVisibility(data.show_stats_publicly || 'global')
                     setPrefsVisibility(data.show_preferences_publicly || 'global')
-                    // Default display_name = part before @
                     setDisplayName(data.display_name || data.username?.split('@')[0] || '')
+                    if (data.created_at) {
+                        const created = new Date(data.created_at);
+                        setCreatedAt(created);
+                        calculateNextWrapped(created);
+                    }
                 }
             }
         }
         fetchSettings()
     }, [])
+
+    const calculateNextWrapped = (created: Date) => {
+        const now = new Date();
+        const next = new Date(created);
+        while (next <= now) {
+            next.setMonth(next.getMonth() + 1);
+        }
+        const diffMs = next.getTime() - now.getTime();
+        setDaysToWrapped(Math.floor(diffMs / (1000 * 60 * 60 * 24)));
+        setHoursToWrapped(Math.floor((diffMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)));
+    }
+
+    const generateWrapped = () => {
+        window.open('/wrapped', '_blank', 'noopener,noreferrer');
+    }
 
     const handleLogout = async () => {
         await supabase.auth.signOut()
@@ -251,11 +274,53 @@ export default function SettingsPage() {
                     </div>
                 </div>
 
+                {/* Grip Wrapped Group */}
+                <div className="space-y-3">
+                    <h3 className="text-sm font-bold text-muted-foreground uppercase tracking-widest px-1 flex items-center gap-2">
+                        <Sparkles className="w-4 h-4 text-purple-500" /> Monthly Review
+                    </h3>
+                    <div className="rounded-2xl border bg-card/50 backdrop-blur-sm p-6 flex flex-col items-center justify-center text-center space-y-4">
+                        <div className="p-4 bg-purple-500/10 rounded-full border border-purple-500/20">
+                            <Sparkles className="w-8 h-8 text-purple-500" />
+                        </div>
+                        <div>
+                            <h4 className="text-lg font-black uppercase italic tracking-tighter text-white">Grip Wrapped</h4>
+                            <p className="text-[10px] text-zinc-500 uppercase tracking-widest font-black italic mt-1">AI-Powered 30-Day Retrospective</p>
+                        </div>
+                        
+                        <div className="bg-zinc-900/50 border border-white/5 rounded-xl p-4 w-full">
+                            <p className="text-sm font-medium text-zinc-400">
+                                Your next Grip Wrapped will be available in:
+                            </p>
+                            <div className="flex justify-center gap-4 mt-3">
+                                <div className="flex flex-col items-center">
+                                    <span className="text-2xl font-black italic text-white">{daysToWrapped}</span>
+                                    <span className="text-[10px] font-black uppercase text-zinc-500 tracking-widest">Days</span>
+                                </div>
+                                <span className="text-2xl font-black italic text-zinc-700">:</span>
+                                <div className="flex flex-col items-center">
+                                    <span className="text-2xl font-black italic text-white">{hoursToWrapped}</span>
+                                    <span className="text-[10px] font-black uppercase text-zinc-500 tracking-widest">Hours</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Force dev generation */}
+                        <button
+                            onClick={generateWrapped}
+                            className="text-[10px] text-purple-500 hover:text-purple-400 font-black uppercase tracking-widest transition-colors flex items-center gap-2"
+                        >
+                            Open Grip Wrapped <ExternalLink className="w-3 h-3" />
+                        </button>
+                    </div>
+                </div>
+
                 <div className="pt-8 text-center">
                     <p className="text-[10px] text-muted-foreground uppercase tracking-[0.2em] font-bold">Grip Control v1.0.0-beta</p>
                     <p className="text-[10px] text-muted-foreground">Encrypted & Private</p>
                 </div>
             </div>
+
         </div>
     )
 }
