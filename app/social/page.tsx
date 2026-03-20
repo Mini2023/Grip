@@ -395,20 +395,20 @@ export default function SocialPage() {
                                         <div className="text-[8px] font-black text-blue-500 uppercase tracking-[0.3em] mb-2 pl-4 italic">Your Status</div>
                                         <Link
                                             href={`/social/user/${currentUserProfile.id}`}
-                                            className="p-6 rounded-[2.5rem] border-2 border-blue-500 bg-blue-500/10 shadow-[0_0_30px_rgba(59,130,246,0.2)] transition-all flex flex-col md:flex-row md:items-center justify-between group cursor-pointer gap-4 hover:scale-[1.01]"
+                                            className="p-4 sm:p-6 rounded-[2rem] sm:rounded-[2.5rem] border-2 border-blue-500 bg-blue-500/10 shadow-[0_0_30px_rgba(59,130,246,0.2)] transition-all flex flex-row items-center justify-between group cursor-pointer gap-4 hover:scale-[1.01]"
                                         >
-                                            <div className="flex items-center gap-6">
+                                            <div className="flex items-center gap-4 sm:gap-6 min-w-0">
                                                 <div className="relative">
-                                                    <div className="w-16 h-16 rounded-2xl bg-blue-600 flex items-center justify-center font-black text-2xl border-2 border-white/10 shadow-xl italic text-white">
+                                                    <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-2xl bg-blue-600 flex items-center justify-center font-black text-2xl border-2 border-white/10 shadow-xl italic text-white">
                                                         {(currentUserProfile.display_name || currentUserProfile.username || 'ME').slice(0, 2).toUpperCase()}
                                                     </div>
                                                     <div className="absolute -top-3 -right-3 w-8 h-8 rounded-full flex items-center justify-center border-2 border-zinc-950 shadow-2xl bg-blue-500 text-white font-black text-[10px] italic">
                                                         #{userRank}
                                                     </div>
                                                 </div>
-                                                <div className="space-y-2">
-                                                    <div className="flex items-center gap-3">
-                                                        <span className="font-black text-white text-lg italic uppercase tracking-tighter">
+                                                <div className="space-y-1 sm:space-y-2 min-w-0">
+                                                    <div className="flex items-center gap-2 sm:gap-3 flex-wrap sm:flex-nowrap">
+                                                        <span className="font-black text-white text-base sm:text-lg italic uppercase tracking-tighter truncate max-w-[120px] sm:max-w-[200px]">
                                                             {currentUserProfile.display_name || currentUserProfile.username} (YOU)
                                                         </span>
                                                         <span className="text-[8px] bg-white/20 text-white px-2 py-0.5 rounded-full font-black tracking-widest uppercase border border-white/10">
@@ -422,12 +422,12 @@ export default function SocialPage() {
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div className="flex items-center justify-between md:flex-col md:items-end gap-1">
+                                            <div className="flex flex-col items-end gap-1 shrink-0">
                                                 <div className="flex items-baseline gap-1.5">
                                                     <span className="text-4xl font-black italic text-white">{getStreak(currentUserProfile)}</span>
                                                     <span className="text-[10px] font-black text-blue-200 tracking-widest italic">DAYS</span>
                                                 </div>
-                                                <span className="text-[8px] font-black uppercase tracking-widest text-white transition-all">View Own Intel Profile →</span>
+                                                <span className="hidden sm:block text-[8px] font-black uppercase tracking-widest text-white transition-all">View Own Intel Profile →</span>
                                             </div>
                                         </Link>
                                         <div className="h-px w-full bg-white/5 mt-4" />
@@ -454,13 +454,13 @@ export default function SocialPage() {
                                                 href={`/social/user/${friend.id}`}
                                                 key={friend.id}
                                                 className={cn(
-                                                    "p-6 rounded-[2.5rem] border bg-card/20 backdrop-blur-md transition-all flex flex-col md:flex-row md:items-center justify-between group cursor-pointer gap-4 hover:scale-[1.01]",
+                                                    "p-4 sm:p-6 rounded-[2rem] sm:rounded-[2.5rem] border bg-card/20 backdrop-blur-md transition-all flex flex-row items-center justify-between group cursor-pointer gap-4 hover:scale-[1.01]",
                                                     originalIndex === 0 && activeTab === 'global' ? "border-amber-500/30 bg-amber-500/5 shadow-2xl shadow-amber-500/5" : "hover:border-blue-500/20"
                                                 )}
                                             >
-                                                <div className="flex items-center gap-6">
+                                                <div className="flex items-center gap-4 sm:gap-6 min-w-0">
                                                     <div className="relative">
-                                                        <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-zinc-800 to-zinc-700 flex items-center justify-center font-black text-2xl border-2 border-white/5 shadow-xl group-hover:rotate-3 transition-transform italic">
+                                                        <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-tr from-zinc-800 to-zinc-700 flex items-center justify-center font-black text-2xl border-2 border-white/5 shadow-xl group-hover:rotate-3 transition-transform italic">
                                                             {userAvatar}
                                                         </div>
                                                         {(originalIndex < 3 && activeTab === 'global') ? (
@@ -476,9 +476,9 @@ export default function SocialPage() {
                                                             </div>
                                                         )}
                                                     </div>
-                                                    <div className="space-y-2">
-                                                        <div className="flex items-center gap-3">
-                                                            <span className="font-black text-white text-lg italic uppercase tracking-tighter">
+                                                    <div className="space-y-1 sm:space-y-2 min-w-0">
+                                                        <div className="flex items-center gap-2 sm:gap-3 flex-wrap sm:flex-nowrap">
+                                                            <span className="font-black text-white text-base sm:text-lg italic uppercase tracking-tighter truncate max-w-[120px] sm:max-w-[200px]">
                                                                 {label}
                                                             </span>
                                                             <span className="text-[8px] bg-blue-500/10 text-blue-500 px-2 py-0.5 rounded-full font-black tracking-widest uppercase border border-blue-500/20">
@@ -492,7 +492,7 @@ export default function SocialPage() {
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div className="flex items-center justify-between md:flex-col md:items-end gap-1">
+                                                <div className="flex flex-col items-end gap-1 shrink-0">
                                                     <div className="flex items-baseline gap-1.5">
                                                         <span className={cn(
                                                             "text-4xl font-black italic",
@@ -500,7 +500,7 @@ export default function SocialPage() {
                                                         )}>{days}</span>
                                                         <span className="text-[10px] font-black text-zinc-500 tracking-widest italic">DAYS</span>
                                                     </div>
-                                                    <span className="text-[8px] font-black uppercase tracking-widest text-emerald-500/60 transition-all group-hover:text-emerald-500">View Intel Profile →</span>
+                                                    <span className="hidden sm:block text-[8px] font-black uppercase tracking-widest text-emerald-500/60 transition-all group-hover:text-emerald-500">View Intel Profile →</span>
                                                 </div>
                                             </Link>
                                         )
