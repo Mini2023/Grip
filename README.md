@@ -28,6 +28,12 @@ Track the content you consume, your habits, and your progress towards your goals
 
 ---
 
+## New in v1.2
+
+- **Grip Wrapped** a montly summary inspired by spotify Wrapped
+- **AI Features for /shield** including emergency chat and detailed Analysis
+- **Constellation Map** A map to get deatils on connections between tags, artists and media types. Inspired by the obsidian graph view
+
 ## 🛠️ Tactical Feature Set
 
 ### 🔬 Extraction Lab (Dashboard)
