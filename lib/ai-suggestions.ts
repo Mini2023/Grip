@@ -3,7 +3,7 @@ import { createClient } from '@supabase/supabase-js';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
-const supabase = createClient(supabaseUrl, supabaseKey);
+const supabase = createClient(supabaseUrl || "https://placeholder.supabase.co", supabaseKey || "placeholder-anon-key");
 
 export async function aggregateUserData(userId: string) {
     const { data: sessions, error } = await supabase

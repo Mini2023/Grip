@@ -63,12 +63,12 @@ const THEMES: Record<ThemeKey, { rgb: string; accent: string }> = {
 const fadeUp = (delay = 0) => ({
     initial: { opacity: 0, y: 24 },
     animate: { opacity: 1, y: 0 },
-    transition: { delay, duration: 0.55, ease: [0.22, 1, 0.36, 1] as number[] },
+    transition: { delay, duration: 0.55, ease: [0.22, 1, 0.36, 1] as const },
 })
 const scalePop = (delay = 0) => ({
     initial: { opacity: 0, scale: 0.5 },
     animate: { opacity: 1, scale: 1 },
-    transition: { delay, duration: 0.5, ease: [0.22, 1, 0.36, 1] as number[] },
+    transition: { delay, duration: 0.5, ease: [0.22, 1, 0.36, 1] as const },
 })
 const staggerItem = (i: number) => ({
     initial: { opacity: 0, x: -16 },

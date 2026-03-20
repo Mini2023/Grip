@@ -1,0 +1,179 @@
+
+> grip-control@0.1.0 dev
+> next dev
+
+  ▲ Next.js 14.2.3
+  - Local:        http://localhost:3000
+
+ ✓ Starting...
+ ✓ Ready in 2s
+ ○ Compiling /middleware ...
+ ✓ Compiled /middleware in 1633ms (124 modules)
+ ⨯ Error: Your project's URL and Key are required to create a Supabase client!
+
+Check your Supabase project's API settings to find these values
+
+https://supabase.com/dashboard/project/_/settings/api
+    at <unknown> (https://supabase.com/dashboard/project/_/settings/api)
+    at createServerClient (webpack-internal:///(middleware)/./node_modules/@supabase/ssr/dist/module/createServerClient.js:15:15)
+    at updateSession (webpack-internal:///(middleware)/./lib/supabase/middleware.ts:15:87)
+    at Object.middleware [as handler] (webpack-internal:///(middleware)/./middleware.ts:9:89)
+    at eval (webpack-internal:///(middleware)/./node_modules/next/dist/esm/server/web/adapter.js:202:31)
+    at AsyncLocalStorage.run (node:internal/async_local_storage/async_hooks:91:14)
+    at Object.wrap (webpack-internal:///(middleware)/./node_modules/next/dist/esm/server/async-storage/request-async-storage-wrapper.js:83:24)
+    at eval (webpack-internal:///(middleware)/./node_modules/next/dist/esm/server/web/adapter.js:189:122)
+    at eval (webpack-internal:///(middleware)/./node_modules/next/dist/esm/server/lib/trace/tracer.js:115:36)
+    at NoopContextManager.with (webpack-internal:///(middleware)/./node_modules/next/dist/compiled/@opentelemetry/api/index.js:2:7062)
+    at ContextAPI.with (webpack-internal:///(middleware)/./node_modules/next/dist/compiled/@opentelemetry/api/index.js:2:518)
+ ○ Compiling /_error ...
+ ✓ Compiled /_error in 2.5s (252 modules)
+ GET /wrapped 404 in 10ms
+ ○ Compiling /_not-found ...
+<w> [webpack.cache.PackFileCacheStrategy] Serializing big strings (133kiB) impacts deserialization performance (consider using Buffer instead and decode when needed)
+ ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+ ⨯ Error: Your project's URL and Key are required to create a Supabase client!
+
+Check your Supabase project's API settings to find these values
+
+https://supabase.com/dashboard/project/_/settings/api
+    at <unknown> (https://supabase.com/dashboard/project/_/settings/api)
+    at createServerClient (webpack-internal:///(middleware)/./node_modules/@supabase/ssr/dist/module/createServerClient.js:15:15)
+    at updateSession (webpack-internal:///(middleware)/./lib/supabase/middleware.ts:15:87)
+    at Object.middleware [as handler] (webpack-internal:///(middleware)/./middleware.ts:9:89)
+    at eval (webpack-internal:///(middleware)/./node_modules/next/dist/esm/server/web/adapter.js:202:31)
+    at AsyncLocalStorage.run (node:internal/async_local_storage/async_hooks:91:14)
+    at Object.wrap (webpack-internal:///(middleware)/./node_modules/next/dist/esm/server/async-storage/request-async-storage-wrapper.js:83:24)
+    at eval (webpack-internal:///(middleware)/./node_modules/next/dist/esm/server/web/adapter.js:189:122)
+    at eval (webpack-internal:///(middleware)/./node_modules/next/dist/esm/server/lib/trace/tracer.js:115:36)
+    at NoopContextManager.with (webpack-internal:///(middleware)/./node_modules/next/dist/compiled/@opentelemetry/api/index.js:2:7062)
+    at ContextAPI.with (webpack-internal:///(middleware)/./node_modules/next/dist/compiled/@opentelemetry/api/index.js:2:518)
+ ✓ Compiled /_not-found in 16.9s (1876 modules)
+ GET /wrapped 404 in 4ms
+ ⨯ Error [ERR_HTTP_HEADERS_SENT]: Cannot append headers after they are sent to the client
+    at ServerResponse.appendHeader (node:_http_outgoing:758:11)
+digest: "3260290064"
+Supabase credentials missing. Please add NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY to your .env file.
+ ⨯ Error [ERR_HTTP_HEADERS_SENT]: Cannot append headers after they are sent to the client
+    at ServerResponse.appendHeader (node:_http_outgoing:758:11)
+digest: "3260290064"
+ ⨯ Error: Your project's URL and Key are required to create a Supabase client!
+
+Check your Supabase project's API settings to find these values
+
+https://supabase.com/dashboard/project/_/settings/api
+    at <unknown> (https://supabase.com/dashboard/project/_/settings/api)
+    at createServerClient (webpack-internal:///(middleware)/./node_modules/@supabase/ssr/dist/module/createServerClient.js:15:15)
+    at updateSession (webpack-internal:///(middleware)/./lib/supabase/middleware.ts:15:87)
+    at Object.middleware [as handler] (webpack-internal:///(middleware)/./middleware.ts:9:89)
+    at eval (webpack-internal:///(middleware)/./node_modules/next/dist/esm/server/web/adapter.js:202:31)
+    at AsyncLocalStorage.run (node:internal/async_local_storage/async_hooks:91:14)
+    at Object.wrap (webpack-internal:///(middleware)/./node_modules/next/dist/esm/server/async-storage/request-async-storage-wrapper.js:83:24)
+    at eval (webpack-internal:///(middleware)/./node_modules/next/dist/esm/server/web/adapter.js:189:122)
+    at eval (webpack-internal:///(middleware)/./node_modules/next/dist/esm/server/lib/trace/tracer.js:115:36)
+    at NoopContextManager.with (webpack-internal:///(middleware)/./node_modules/next/dist/compiled/@opentelemetry/api/index.js:2:7062)
+    at ContextAPI.with (webpack-internal:///(middleware)/./node_modules/next/dist/compiled/@opentelemetry/api/index.js:2:518)
+ ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+ GET /wrapped 404 in 3ms
+ ⨯ Error [ERR_HTTP_HEADERS_SENT]: Cannot append headers after they are sent to the client
+    at ServerResponse.appendHeader (node:_http_outgoing:758:11)
+digest: "3260290064"
+ ⨯ Error: Your project's URL and Key are required to create a Supabase client!
+
+Check your Supabase project's API settings to find these values
+
+https://supabase.com/dashboard/project/_/settings/api
+    at <unknown> (https://supabase.com/dashboard/project/_/settings/api)
+    at createServerClient (webpack-internal:///(middleware)/./node_modules/@supabase/ssr/dist/module/createServerClient.js:15:15)
+    at updateSession (webpack-internal:///(middleware)/./lib/supabase/middleware.ts:15:87)
+    at Object.middleware [as handler] (webpack-internal:///(middleware)/./middleware.ts:9:89)
+    at eval (webpack-internal:///(middleware)/./node_modules/next/dist/esm/server/web/adapter.js:202:31)
+    at AsyncLocalStorage.run (node:internal/async_local_storage/async_hooks:91:14)
+    at Object.wrap (webpack-internal:///(middleware)/./node_modules/next/dist/esm/server/async-storage/request-async-storage-wrapper.js:83:24)
+    at eval (webpack-internal:///(middleware)/./node_modules/next/dist/esm/server/web/adapter.js:189:122)
+    at eval (webpack-internal:///(middleware)/./node_modules/next/dist/esm/server/lib/trace/tracer.js:115:36)
+    at NoopContextManager.with (webpack-internal:///(middleware)/./node_modules/next/dist/compiled/@opentelemetry/api/index.js:2:7062)
+    at ContextAPI.with (webpack-internal:///(middleware)/./node_modules/next/dist/compiled/@opentelemetry/api/index.js:2:518)
+ GET /wrapped 404 in 2ms
+ ⨯ Error [ERR_HTTP_HEADERS_SENT]: Cannot append headers after they are sent to the client
+    at ServerResponse.appendHeader (node:_http_outgoing:758:11)
+digest: "3260290064"
+ ⨯ Error: Your project's URL and Key are required to create a Supabase client!
+
+Check your Supabase project's API settings to find these values
+
+https://supabase.com/dashboard/project/_/settings/api
+    at <unknown> (https://supabase.com/dashboard/project/_/settings/api)
+    at createServerClient (webpack-internal:///(middleware)/./node_modules/@supabase/ssr/dist/module/createServerClient.js:15:15)
+    at updateSession (webpack-internal:///(middleware)/./lib/supabase/middleware.ts:15:87)
+    at Object.middleware [as handler] (webpack-internal:///(middleware)/./middleware.ts:9:89)
+    at eval (webpack-internal:///(middleware)/./node_modules/next/dist/esm/server/web/adapter.js:202:31)
+    at AsyncLocalStorage.run (node:internal/async_local_storage/async_hooks:91:14)
+    at Object.wrap (webpack-internal:///(middleware)/./node_modules/next/dist/esm/server/async-storage/request-async-storage-wrapper.js:83:24)
+    at eval (webpack-internal:///(middleware)/./node_modules/next/dist/esm/server/web/adapter.js:189:122)
+    at eval (webpack-internal:///(middleware)/./node_modules/next/dist/esm/server/lib/trace/tracer.js:115:36)
+    at NoopContextManager.with (webpack-internal:///(middleware)/./node_modules/next/dist/compiled/@opentelemetry/api/index.js:2:7062)
+    at ContextAPI.with (webpack-internal:///(middleware)/./node_modules/next/dist/compiled/@opentelemetry/api/index.js:2:518)
+ GET /wrapped 404 in 2ms
+ ⨯ Error [ERR_HTTP_HEADERS_SENT]: Cannot append headers after they are sent to the client
+    at ServerResponse.appendHeader (node:_http_outgoing:758:11)
+digest: "3260290064"
+ ⨯ Error: Your project's URL and Key are required to create a Supabase client!
+
+Check your Supabase project's API settings to find these values
+
+https://supabase.com/dashboard/project/_/settings/api
+    at <unknown> (https://supabase.com/dashboard/project/_/settings/api)
+    at createServerClient (webpack-internal:///(middleware)/./node_modules/@supabase/ssr/dist/module/createServerClient.js:15:15)
+    at updateSession (webpack-internal:///(middleware)/./lib/supabase/middleware.ts:15:87)
+    at Object.middleware [as handler] (webpack-internal:///(middleware)/./middleware.ts:9:89)
+    at eval (webpack-internal:///(middleware)/./node_modules/next/dist/esm/server/web/adapter.js:202:31)
+    at AsyncLocalStorage.run (node:internal/async_local_storage/async_hooks:91:14)
+    at Object.wrap (webpack-internal:///(middleware)/./node_modules/next/dist/esm/server/async-storage/request-async-storage-wrapper.js:83:24)
+    at eval (webpack-internal:///(middleware)/./node_modules/next/dist/esm/server/web/adapter.js:189:122)
+    at eval (webpack-internal:///(middleware)/./node_modules/next/dist/esm/server/lib/trace/tracer.js:115:36)
+    at NoopContextManager.with (webpack-internal:///(middleware)/./node_modules/next/dist/compiled/@opentelemetry/api/index.js:2:7062)
+    at ContextAPI.with (webpack-internal:///(middleware)/./node_modules/next/dist/compiled/@opentelemetry/api/index.js:2:518)
+ GET /wrapped 404 in 3ms
+ ⨯ Error [ERR_HTTP_HEADERS_SENT]: Cannot append headers after they are sent to the client
+    at ServerResponse.appendHeader (node:_http_outgoing:758:11)
+digest: "3260290064"
+ ⨯ Error: Your project's URL and Key are required to create a Supabase client!
+
+Check your Supabase project's API settings to find these values
+
+https://supabase.com/dashboard/project/_/settings/api
+    at <unknown> (https://supabase.com/dashboard/project/_/settings/api)
+    at createServerClient (webpack-internal:///(middleware)/./node_modules/@supabase/ssr/dist/module/createServerClient.js:15:15)
+    at updateSession (webpack-internal:///(middleware)/./lib/supabase/middleware.ts:15:87)
+    at Object.middleware [as handler] (webpack-internal:///(middleware)/./middleware.ts:9:89)
+    at eval (webpack-internal:///(middleware)/./node_modules/next/dist/esm/server/web/adapter.js:202:31)
+    at AsyncLocalStorage.run (node:internal/async_local_storage/async_hooks:91:14)
+    at Object.wrap (webpack-internal:///(middleware)/./node_modules/next/dist/esm/server/async-storage/request-async-storage-wrapper.js:83:24)
+    at eval (webpack-internal:///(middleware)/./node_modules/next/dist/esm/server/web/adapter.js:189:122)
+    at eval (webpack-internal:///(middleware)/./node_modules/next/dist/esm/server/lib/trace/tracer.js:115:36)
+    at NoopContextManager.with (webpack-internal:///(middleware)/./node_modules/next/dist/compiled/@opentelemetry/api/index.js:2:7062)
+    at ContextAPI.with (webpack-internal:///(middleware)/./node_modules/next/dist/compiled/@opentelemetry/api/index.js:2:518)
+ GET /wrapped 404 in 1ms
+ ⨯ Error [ERR_HTTP_HEADERS_SENT]: Cannot append headers after they are sent to the client
+    at ServerResponse.appendHeader (node:_http_outgoing:758:11)
+digest: "3260290064"
+ ⨯ Error: Your project's URL and Key are required to create a Supabase client!
+
+Check your Supabase project's API settings to find these values
+
+https://supabase.com/dashboard/project/_/settings/api
+    at <unknown> (https://supabase.com/dashboard/project/_/settings/api)
+    at createServerClient (webpack-internal:///(middleware)/./node_modules/@supabase/ssr/dist/module/createServerClient.js:15:15)
+    at updateSession (webpack-internal:///(middleware)/./lib/supabase/middleware.ts:15:87)
+    at Object.middleware [as handler] (webpack-internal:///(middleware)/./middleware.ts:9:89)
+    at eval (webpack-internal:///(middleware)/./node_modules/next/dist/esm/server/web/adapter.js:202:31)
+    at AsyncLocalStorage.run (node:internal/async_local_storage/async_hooks:91:14)
+    at Object.wrap (webpack-internal:///(middleware)/./node_modules/next/dist/esm/server/async-storage/request-async-storage-wrapper.js:83:24)
+    at eval (webpack-internal:///(middleware)/./node_modules/next/dist/esm/server/web/adapter.js:189:122)
+    at eval (webpack-internal:///(middleware)/./node_modules/next/dist/esm/server/lib/trace/tracer.js:115:36)
+    at NoopContextManager.with (webpack-internal:///(middleware)/./node_modules/next/dist/compiled/@opentelemetry/api/index.js:2:7062)
+    at ContextAPI.with (webpack-internal:///(middleware)/./node_modules/next/dist/compiled/@opentelemetry/api/index.js:2:518)
+ GET /wrapped 404 in 1ms
+ ⨯ Error [ERR_HTTP_HEADERS_SENT]: Cannot append headers after they are sent to the client
+    at ServerResponse.appendHeader (node:_http_outgoing:758:11)
+digest: "3260290064"
