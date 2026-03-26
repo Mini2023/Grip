@@ -131,7 +131,7 @@ function AnimatedLineGraph({ data, prevData, isActive }: {
                 initial={{ pathLength: 0, opacity: 0 }}
                 animate={isActive ? { pathLength: 1, opacity: 0.15 } : { pathLength: 0, opacity: 0 }}
                 transition={{ duration: 1.5, delay: 0.5, ease: "easeOut" }}
-                filter="blur(4px)"
+                strokeOpacity={0.15}
             />
             {/* Dots */}
             {currentPts.map((p, i) => (
@@ -204,11 +204,11 @@ function IntroSlide({ stories, computed }: { stories: Stories; computed: Compute
                 Retrospective
             </motion.p>
             <motion.h1 {...scalePop(0.2)} className="text-6xl sm:text-8xl font-black italic uppercase tracking-tighter text-white mb-4"
-                style={{ textShadow: '0 0 50px rgba(168,85,247,0.3)' }}>
+                style={{ textShadow: '0 4px 12px rgba(168,85,247,0.3)' }}>
                 Grip Wrapped
             </motion.h1>
             <motion.p {...fadeUp(0.4)} className="text-5xl sm:text-7xl font-black italic text-purple-400 mb-6"
-                style={{ textShadow: '0 4px 30px rgba(168,85,247,0.5)' }}>
+                style={{ textShadow: '0 4px 12px rgba(168,85,247,0.5)' }}>
                 {computed.total_sessions}
             </motion.p>
             <motion.p {...fadeUp(0.5)} className="text-[10px] font-black uppercase tracking-[0.3em] text-purple-400/60 mb-8">
@@ -236,7 +236,7 @@ function TriggerSlide({ stories, computed }: { stories: Stories; computed: Compu
         <div className="flex flex-col items-center justify-center h-full px-8 text-center">
             <motion.p {...fadeUp(0.1)} className="text-[10px] font-black uppercase tracking-[0.3em] text-emerald-400/60 mb-2">The Lab</motion.p>
             <motion.h2 {...fadeUp(0.15)} className="text-4xl sm:text-5xl font-black italic uppercase tracking-tighter text-white mb-8"
-                style={{ textShadow: '0 0 30px rgba(16,185,129,0.3)' }}>
+                style={{ textShadow: '0 4px 12px rgba(16,185,129,0.3)' }}>
                 Top Triggers
             </motion.h2>
             <div className="w-full max-w-sm space-y-2 mb-8">
@@ -282,7 +282,7 @@ function BehaviorSlide({ stories, computed, isActive }: { stories: Stories; comp
         <div className="flex flex-col items-center justify-center h-full px-8 text-center">
             <motion.p {...fadeUp(0.1)} className="text-[10px] font-black uppercase tracking-[0.3em] text-emerald-400/60 mb-2">The Lab</motion.p>
             <motion.h2 {...fadeUp(0.15)} className="text-4xl sm:text-5xl font-black italic uppercase tracking-tighter text-white mb-4"
-                style={{ textShadow: '0 0 30px rgba(16,185,129,0.3)' }}>
+                style={{ textShadow: '0 4px 12px rgba(16,185,129,0.3)' }}>
                 Behavior
             </motion.h2>
             <motion.div {...scalePop(0.25)} className={`flex items-center gap-2 mb-6 ${trendColor}`}>
@@ -330,7 +330,7 @@ function ArtistSlide({ stories, computed }: { stories: Stories; computed: Comput
             <div className="flex flex-col items-center justify-center h-full px-8 text-center">
                 <motion.p {...fadeUp(0.1)} className="text-[10px] font-black uppercase tracking-[0.3em] text-emerald-400/60 mb-2">The Lab</motion.p>
                 <motion.h2 {...fadeUp(0.15)} className="text-4xl sm:text-5xl font-black italic uppercase tracking-tighter text-white mb-8"
-                    style={{ textShadow: '0 0 30px rgba(16,185,129,0.3)' }}>Top Artists</motion.h2>
+                    style={{ textShadow: '0 4px 12px rgba(16,185,129,0.3)' }}>Top Artists</motion.h2>
                 <motion.p {...fadeUp(0.3)} className="text-zinc-500 italic">Keine verwertbaren Artist-Daten.</motion.p>
             </div>
         )
@@ -340,7 +340,7 @@ function ArtistSlide({ stories, computed }: { stories: Stories; computed: Comput
         <div className="flex flex-col items-center justify-center h-full px-8 text-center">
             <motion.p {...fadeUp(0.1)} className="text-[10px] font-black uppercase tracking-[0.3em] text-emerald-400/60 mb-2">The Lab</motion.p>
             <motion.h2 {...fadeUp(0.15)} className="text-4xl sm:text-5xl font-black italic uppercase tracking-tighter text-white mb-10"
-                style={{ textShadow: '0 0 30px rgba(16,185,129,0.3)' }}>
+                style={{ textShadow: '0 4px 12px rgba(16,185,129,0.3)' }}>
                 Top Artists
             </motion.h2>
             <div className="space-y-3 w-full max-w-sm mb-8">
@@ -351,7 +351,7 @@ function ArtistSlide({ stories, computed }: { stories: Stories; computed: Comput
                             className="w-full flex items-center gap-4 hover:bg-emerald-500/5 rounded-2xl p-3 transition-colors text-left"
                         >
                             <span className="text-4xl font-black italic text-emerald-400"
-                                style={{ textShadow: '0 2px 15px rgba(16,185,129,0.4)' }}>
+                                style={{ textShadow: '0 2px 6px rgba(16,185,129,0.4)' }}>
                                 #{i + 1}
                             </span>
                             <div className="text-left">
@@ -385,7 +385,7 @@ function MediaSlide({ stories, computed, isActive }: { stories: Stories; compute
         <div className="flex flex-col items-center justify-center h-full px-8 text-center">
             <motion.p {...fadeUp(0.1)} className="text-[10px] font-black uppercase tracking-[0.3em] text-emerald-400/60 mb-2">The Lab</motion.p>
             <motion.h2 {...fadeUp(0.15)} className="text-4xl sm:text-5xl font-black italic uppercase tracking-tighter text-white mb-10"
-                style={{ textShadow: '0 0 30px rgba(16,185,129,0.3)' }}>
+                style={{ textShadow: '0 4px 12px rgba(16,185,129,0.3)' }}>
                 Media Types
             </motion.h2>
             <div className="w-full max-w-xs space-y-4 mb-8">
@@ -401,7 +401,7 @@ function MediaSlide({ stories, computed, isActive }: { stories: Stories; compute
                                 animate={isActive ? { width: `${m.percent}%` } : { width: 0 }}
                                 transition={{ delay: 0.5 + i * 0.15, duration: 0.8, ease: "easeOut" }}
                                 className="h-full bg-emerald-500 rounded-full"
-                                style={{ boxShadow: '0 0 10px rgba(16,185,129,0.4)' }}
+                                style={{ boxShadow: '0 2px 4px rgba(16,185,129,0.4)' }}
                             />
                         </div>
                     </motion.div>
@@ -422,12 +422,12 @@ function StreakSlide({ stories, computed }: { stories: Stories; computed: Comput
         <div className="flex flex-col items-center justify-center h-full px-8 text-center">
             <motion.p {...fadeUp(0.1)} className="text-[10px] font-black uppercase tracking-[0.3em] text-orange-400/60 mb-2">The Shield</motion.p>
             <motion.h2 {...fadeUp(0.15)} className="text-4xl sm:text-5xl font-black italic uppercase tracking-tighter text-white mb-4"
-                style={{ textShadow: '0 0 30px rgba(249,115,22,0.3)' }}>
+                style={{ textShadow: '0 4px 12px rgba(249,115,22,0.3)' }}>
                 Longest Streak
             </motion.h2>
             <motion.div {...scalePop(0.3)} className="mb-4">
                 <p className="text-8xl sm:text-[10rem] font-black italic text-orange-400 leading-none"
-                    style={{ textShadow: '0 4px 40px rgba(249,115,22,0.5)' }}>
+                    style={{ textShadow: '0 4px 12px rgba(249,115,22,0.5)' }}>
                     {computed.longest_streak_days}
                 </p>
             </motion.div>
@@ -449,12 +449,12 @@ function RelapseSlide({ stories, computed }: { stories: Stories; computed: Compu
         <div className="flex flex-col items-center justify-center h-full px-8 text-center">
             <motion.p {...fadeUp(0.1)} className="text-[10px] font-black uppercase tracking-[0.3em] text-orange-400/60 mb-2">The Shield</motion.p>
             <motion.h2 {...fadeUp(0.15)} className="text-4xl sm:text-5xl font-black italic uppercase tracking-tighter text-white mb-8"
-                style={{ textShadow: '0 0 30px rgba(249,115,22,0.3)' }}>
+                style={{ textShadow: '0 4px 12px rgba(249,115,22,0.3)' }}>
                 Relapses
             </motion.h2>
             <div className="grid grid-cols-2 gap-5 max-w-sm w-full mb-6">
                 <motion.div {...scalePop(0.3)} className="p-5 bg-red-500/5 rounded-2xl border border-red-500/15 text-center">
-                    <p className="text-5xl font-black italic text-red-400" style={{ textShadow: '0 2px 15px rgba(239,68,68,0.4)' }}>
+                    <p className="text-5xl font-black italic text-red-400" style={{ textShadow: '0 2px 6px rgba(239,68,68,0.4)' }}>
                         {computed.total_relapses}
                     </p>
                     <p className="text-[8px] font-black uppercase tracking-[0.3em] text-red-400/50 mt-2">Total Lapses</p>
@@ -487,10 +487,10 @@ function SummarySlide({ stories }: { stories: Stories }) {
     return (
         <div className="flex flex-col items-center justify-center h-full px-8 text-center">
             <motion.div {...scalePop(0.1)} className="mb-6">
-                <Shield className="w-12 h-12 text-purple-400" style={{ filter: 'drop-shadow(0 0 15px rgba(168,85,247,0.5))' }} />
+                <Shield className="w-12 h-12 text-purple-400" style={{ filter: 'drop-shadow(0 4px 6px rgba(168,85,247,0.5))' }} />
             </motion.div>
             <motion.h2 {...fadeUp(0.2)} className="text-4xl sm:text-5xl font-black italic uppercase tracking-tighter text-white mb-8"
-                style={{ textShadow: '0 0 30px rgba(168,85,247,0.3)' }}>
+                style={{ textShadow: '0 4px 12px rgba(168,85,247,0.3)' }}>
                 Zusammenfassung
             </motion.h2>
             <motion.p {...fadeUp(0.4)} className="text-lg text-zinc-300 max-w-lg leading-relaxed">
@@ -507,11 +507,11 @@ function MissionSlide({ stories, onSavePng }: { stories: Stories; onSavePng: () 
     return (
         <div className="flex flex-col items-center justify-center h-full px-8 text-center">
             <motion.div {...scalePop(0.1)} className="mb-6">
-                <Flame className="w-12 h-12 text-purple-400" style={{ filter: 'drop-shadow(0 0 15px rgba(168,85,247,0.5))' }} />
+                <Flame className="w-12 h-12 text-purple-400" style={{ filter: 'drop-shadow(0 4px 6px rgba(168,85,247,0.5))' }} />
             </motion.div>
             <motion.p {...fadeUp(0.15)} className="text-[10px] font-black uppercase tracking-[0.4em] text-purple-400/60 mb-4">Dein Auftrag</motion.p>
             <motion.h2 {...fadeUp(0.25)} className="text-4xl sm:text-6xl font-black italic uppercase tracking-tighter text-white mb-8"
-                style={{ textShadow: '0 0 40px rgba(168,85,247,0.3)' }}>
+                style={{ textShadow: '0 4px 12px rgba(168,85,247,0.3)' }}>
                 {stories.next_mission_title}
             </motion.h2>
             <motion.p {...fadeUp(0.45)} className="text-lg text-zinc-300 max-w-lg leading-relaxed mb-10">
@@ -784,10 +784,10 @@ export default function WrappedPage() {
                     initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
                     transition={{ duration: 0.8 }}
                     className="absolute inset-0 pointer-events-none z-0">
-                    <div className="absolute top-[-10%] left-1/2 -translate-x-1/2 w-[500px] h-[500px] rounded-full blur-[200px] opacity-25"
-                        style={{ backgroundColor: `rgb(${activeTheme.rgb})` }} />
-                    <div className="absolute bottom-[-5%] right-[10%] w-[300px] h-[300px] rounded-full blur-[160px] opacity-15"
-                        style={{ backgroundColor: `rgb(${activeTheme.rgb})` }} />
+                    <div className="absolute top-[-10%] left-1/2 -translate-x-1/2 w-[500px] h-[500px] rounded-full  opacity-25"
+                        style={{ background: `radial-gradient(circle, rgba(${activeTheme.rgb}, 0.25) 0%, transparent 70%)` }} />
+                    <div className="absolute bottom-[-5%] right-[10%] w-[300px] h-[300px] rounded-full  opacity-15"
+                        style={{ background: `radial-gradient(circle, rgba(${activeTheme.rgb}, 0.25) 0%, transparent 70%)` }} />
                 </motion.div>
             </AnimatePresence>
 
